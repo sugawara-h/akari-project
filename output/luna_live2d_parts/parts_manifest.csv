@@ -1,0 +1,113 @@
+name,group,status,bbox,notes
+hair_back_L_01,A_hair_back,extracted_visible_pixels,"(197, 108, 394, 570)",後ろ髪左上。顔や前髪の裏に配置してください。
+hair_back_L_02,A_hair_back,extracted_visible_pixels,"(99, 384, 350, 1220)",後ろ髪左中。揺れ用の親パーツ候補です。
+hair_back_L_03,A_hair_back,extracted_visible_pixels,"(61, 757, 226, 1536)",後ろ髪左下。毛先揺れを強めに設定できます。
+hair_back_R_01,A_hair_back,extracted_visible_pixels,"(627, 107, 832, 584)",後ろ髪右上。
+hair_back_R_02,A_hair_back,extracted_visible_pixels,"(734, 392, 1024, 1252)",後ろ髪右中。
+hair_back_R_03,A_hair_back,extracted_visible_pixels,"(821, 858, 1024, 1536)",後ろ髪右下。
+hair_tip_L_01,A_hair_tips,extracted_visible_pixels,"(87, 944, 223, 1453)",左毛先1。遅延揺れ向き。
+hair_tip_L_02,A_hair_tips,extracted_visible_pixels,"(177, 954, 346, 1489)",左毛先2。
+hair_tip_R_01,A_hair_tips,extracted_visible_pixels,"(743, 911, 910, 1536)",右毛先1。
+hair_tip_R_02,A_hair_tips,extracted_visible_pixels,"(876, 810, 1024, 1451)",右毛先2。
+hair_ahoge_01,A_hair_front,extracted_visible_pixels,"(488, 56, 545, 114)",浮き毛1。
+hair_ahoge_02,A_hair_front,extracted_visible_pixels,"(576, 69, 636, 133)",浮き毛2。
+hair_side_L_03,A_hair_side,extracted_visible_pixels,"(78, 572, 230, 1497)",横髪左後。
+hair_side_L_02,A_hair_side,extracted_visible_pixels,"(118, 383, 317, 1375)",横髪左中。
+hair_side_L_01,A_hair_side,extracted_visible_pixels,"(187, 339, 396, 1118)",横髪左前。
+hair_side_R_03,A_hair_side,extracted_visible_pixels,"(825, 439, 1024, 1497)",横髪右後。
+hair_side_R_02,A_hair_side,extracted_visible_pixels,"(712, 321, 958, 1508)",横髪右中。
+hair_side_R_01,A_hair_side,extracted_visible_pixels,"(609, 339, 854, 1136)",横髪右前。
+neck_shadow,A_head_base,extracted_visible_pixels,"(403, 597, 630, 729)",首影。乗算調整推奨。
+neck,A_head_base,extracted_visible_pixels,"(411, 497, 621, 724)",首。隠れ部分の描き足しは別途推奨。
+ear_L,A_head_base,extracted_visible_pixels,"(329, 289, 394, 474)",左耳。髪下に配置。
+ear_R,A_head_base,extracted_visible_pixels,"(632, 297, 698, 459)",右耳。髪下に配置。
+face_base,A_head_base,extracted_visible_pixels,"(365, 167, 672, 576)",顔ベース。輪郭外は元絵依存なので、角度付け前に描き足し推奨。
+face_contour,A_head_base,extracted_visible_pixels,"(365, 167, 672, 576)",顔輪郭調整用の複製レイヤー。
+cheek_normal,A_face_detail,extracted_visible_pixels,"(339, 410, 695, 498)",通常チーク。
+cheek_blush_extra,A_face_detail,extracted_visible_pixels,"(339, 410, 695, 498)",照れ差分チーク。元絵から複製、必要に応じて彩度調整してください。
+nose,A_face_detail,extracted_visible_pixels,"(496, 374, 532, 436)",鼻。角度変化時に微調整しやすいよう独立。
+eyebrow_L,A_face_detail,extracted_visible_pixels,"(397, 304, 481, 348)",左眉。
+eyebrow_R,A_face_detail,extracted_visible_pixels,"(548, 304, 636, 335)",右眉。
+eye_L_white,A_eye_L,extracted_visible_pixels,"(386, 328, 491, 394)",左白目。
+eye_L_iris,A_eye_L,extracted_visible_pixels,"(419, 328, 484, 397)",左黒目・虹彩。
+eye_L_pupil,A_eye_L,extracted_visible_pixels,"(437, 345, 467, 383)",左瞳孔。
+eye_L_highlight,A_eye_L,extracted_visible_pixels,"(426, 334, 466, 368)",左ハイライト。
+eye_L_sparkle_add,A_eye_L,extracted_visible_pixels,"(413, 342, 483, 380)",左瞳きらめき用。加算推奨。
+eye_L_upper_lid,A_eye_L,extracted_visible_pixels,"(381, 300, 497, 351)",左上まぶた線。
+eye_L_lower_lid,A_eye_L,extracted_visible_pixels,"(393, 380, 490, 418)",左下まぶた線。
+eye_L_lash,A_eye_L,extracted_visible_pixels,"(356, 300, 519, 352)",左まつ毛。
+eye_L_smile,A_eye_L_diff,extracted_visible_pixels,"(391, 334, 492, 382)",左笑い目差分。元絵の目線から近似生成。
+eye_L_closed,A_eye_L_diff,extracted_visible_pixels,"(389, 341, 494, 380)",左閉じ目差分。元絵のまぶた線から近似生成。
+eye_R_white,A_eye_R,extracted_visible_pixels,"(529, 326, 637, 392)",右白目。
+eye_R_iris,A_eye_R,extracted_visible_pixels,"(543, 327, 612, 397)",右黒目・虹彩。
+eye_R_pupil,A_eye_R,extracted_visible_pixels,"(564, 345, 596, 383)",右瞳孔。
+eye_R_highlight,A_eye_R,extracted_visible_pixels,"(547, 334, 595, 370)",右ハイライト。
+eye_R_sparkle_add,A_eye_R,extracted_visible_pixels,"(536, 343, 617, 381)",右瞳きらめき用。加算推奨。
+eye_R_upper_lid,A_eye_R,extracted_visible_pixels,"(523, 300, 645, 352)",右上まぶた線。
+eye_R_lower_lid,A_eye_R,extracted_visible_pixels,"(532, 379, 634, 418)",右下まぶた線。
+eye_R_lash,A_eye_R,extracted_visible_pixels,"(502, 300, 664, 352)",右まつ毛。
+eye_R_smile,A_eye_R_diff,extracted_visible_pixels,"(534, 333, 635, 381)",右笑い目差分。
+eye_R_closed,A_eye_R_diff,extracted_visible_pixels,"(530, 341, 638, 381)",右閉じ目差分。
+mouth_base,A_mouth,extracted_visible_pixels,"(484, 476, 565, 524)",口ベース。
+mouth_upper_lip,A_mouth,extracted_visible_pixels,"(483, 476, 566, 503)",上唇。
+mouth_lower_lip,A_mouth,extracted_visible_pixels,"(489, 494, 559, 529)",下唇。
+mouth_inside,A_mouth,extracted_visible_pixels,"(495, 485, 552, 512)",口内。母音差分のベース。
+mouth_teeth,A_mouth,transparent_placeholder,,元絵に歯が見えないため透明。必要時に描き足し。
+mouth_tongue,A_mouth,transparent_placeholder,,元絵に舌が見えないため透明。必要時に描き足し。
+hair_front_center,A_hair_front,extracted_visible_pixels,"(382, 73, 642, 349)",前髪中央。顔より前。
+hair_front_L,A_hair_front,extracted_visible_pixels,"(266, 92, 469, 452)",前髪左。
+hair_front_R,A_hair_front,extracted_visible_pixels,"(576, 87, 739, 474)",前髪右。
+accessory_moon_hair,B_accessory,extracted_visible_pixels,"(300, 208, 388, 303)",月モチーフ髪飾り。
+accessory_star_hair,B_accessory,extracted_visible_pixels,"(278, 232, 349, 297)",星モチーフ髪飾り。
+flower_hair_R,B_accessory,extracted_visible_pixels,"(647, 151, 831, 326)",白花の髪飾り。
+leaf_hair_R,B_accessory,extracted_visible_pixels,"(722, 131, 853, 291)",葉飾り。
+earring_L,B_accessory,extracted_visible_pixels,"(348, 424, 387, 524)",左ピアス。揺れ物。
+earring_R,B_accessory,extracted_visible_pixels,"(643, 417, 684, 519)",右ピアス。揺れ物。
+necklace,B_accessory,extracted_visible_pixels,"(381, 557, 648, 698)",ネックレス。揺れ物。
+chest_accessory,B_accessory,extracted_visible_pixels,"(448, 664, 588, 836)",胸元アクセサリー。
+body_base,C_body,extracted_visible_pixels,"(142, 619, 897, 1536)",上半身ベース。
+chest,C_body,extracted_visible_pixels,"(295, 618, 724, 933)",胸部。
+shoulder_L,C_body,extracted_visible_pixels,"(177, 601, 388, 864)",左肩。
+shoulder_R,C_body,extracted_visible_pixels,"(626, 600, 856, 866)",右肩。
+arm_L_upper,C_body,extracted_visible_pixels,"(127, 712, 316, 1176)",左上腕。
+arm_L_lower,C_body,extracted_visible_pixels,"(158, 969, 421, 1304)",左前腕。
+hand_L,C_body,extracted_visible_pixels,"(364, 966, 551, 1078)",左手。バク前後関係に注意。
+arm_R_upper,C_body,extracted_visible_pixels,"(683, 717, 886, 1149)",右上腕。
+arm_R_lower,C_body,extracted_visible_pixels,"(565, 924, 856, 1112)",右前腕。
+hand_R,C_body,extracted_visible_pixels,"(517, 1015, 704, 1118)",右手。バク前後関係に注意。
+dress_body,D_dress,extracted_visible_pixels,"(166, 637, 875, 1536)",身頃ベース。
+dress_lace_chest,D_dress,extracted_visible_pixels,"(330, 625, 682, 786)",胸元レース。
+dress_ribbon_chest,D_dress,extracted_visible_pixels,"(400, 772, 597, 881)",胸元リボン。
+sleeve_L,D_dress,extracted_visible_pixels,"(61, 702, 375, 1332)",左袖。
+sleeve_R,D_dress,extracted_visible_pixels,"(707, 697, 969, 1264)",右袖。
+sleeve_lace_L,D_dress,extracted_visible_pixels,"(54, 1005, 381, 1322)",左袖レース。
+sleeve_lace_R,D_dress,extracted_visible_pixels,"(713, 1004, 984, 1331)",右袖レース。
+leaf_decoration_L,D_dress,extracted_visible_pixels,"(232, 610, 400, 1316)",装飾葉左。
+leaf_decoration_R,D_dress,extracted_visible_pixels,"(633, 604, 794, 1300)",装飾葉右。
+flower_decoration,D_dress,extracted_visible_pixels,"(252, 748, 762, 1184)",花装飾。
+swaying_ornament,D_dress,extracted_visible_pixels,"(467, 778, 552, 1366)",揺れる先端装飾。
+skirt_upper,D_dress,extracted_visible_pixels,"(177, 995, 884, 1249)",裾上段。
+skirt_lower,D_dress,extracted_visible_pixels,"(125, 1207, 928, 1536)",裾下段。
+baku_body,E_baku,extracted_visible_pixels,"(393, 818, 860, 1234)",バク胴体。
+baku_foot,E_baku,extracted_visible_pixels,"(480, 1093, 751, 1276)",バク足。
+baku_hand_L,E_baku,extracted_visible_pixels,"(428, 968, 552, 1154)",バク手左。
+baku_hand_R,E_baku,extracted_visible_pixels,"(722, 950, 843, 1111)",バク手右。
+baku_ear_L,E_baku,extracted_visible_pixels,"(464, 648, 583, 793)",バク耳左。
+baku_ear_R,E_baku,extracted_visible_pixels,"(789, 683, 892, 799)",バク耳右。
+baku_head,E_baku,extracted_visible_pixels,"(506, 679, 839, 946)",バク頭。
+baku_face,E_baku,extracted_visible_pixels,"(572, 742, 817, 909)",バク顔。
+baku_cheek,E_baku,extracted_visible_pixels,"(660, 824, 837, 887)",バクほっぺ。
+baku_eye,E_baku,extracted_visible_pixels,"(666, 764, 849, 828)",バク目。
+baku_mouth,E_baku,extracted_visible_pixels,"(677, 871, 766, 918)",バク口。
+expr_normal_smile,F_expression_placeholders,transparent_placeholder,,1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。
+expr_soft_smile,F_expression_placeholders,transparent_placeholder,,1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。
+expr_mysterious_downcast,F_expression_placeholders,transparent_placeholder,,1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。
+expr_empathy_worried_brow,F_expression_placeholders,transparent_placeholder,,1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。
+expr_teary_healing,F_expression_placeholders,transparent_placeholder,,1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。
+expr_blush,F_expression_placeholders,transparent_placeholder,,1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。
+expr_serious_fortune,F_expression_placeholders,transparent_placeholder,,1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。
+mouth_A,F_expression_placeholders,transparent_placeholder,,1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。
+mouth_I,F_expression_placeholders,transparent_placeholder,,1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。
+mouth_U,F_expression_placeholders,transparent_placeholder,,1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。
+mouth_E,F_expression_placeholders,transparent_placeholder,,1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。
+mouth_O,F_expression_placeholders,transparent_placeholder,,1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。

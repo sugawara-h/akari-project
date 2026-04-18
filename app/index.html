@@ -1,0 +1,2415 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>月詠あかり 管理システム</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Hiragino Kaku Gothic Pro', 'Yu Gothic', 'メイリオ', sans-serif; background: #f0eef8; color: #1e293b; display: flex; height: 100vh; overflow: hidden; }
+
+/* Sidebar */
+.sidebar { width: 230px; background: #120e24; color: white; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
+.sidebar-logo { padding: 24px 18px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.sidebar-logo h1 { font-size: 15px; font-weight: bold; color: #e2d9f3; letter-spacing: 0.05em; }
+.sidebar-logo p { font-size: 11px; color: #8b6db0; margin-top: 5px; }
+.nav-section { padding: 16px 12px 8px; font-size: 10px; color: #5a4070; letter-spacing: 0.1em; text-transform: uppercase; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 12px 18px; cursor: pointer; transition: all 0.2s; color: #b09cc8; font-size: 13px; border-left: 3px solid transparent; position: relative; }
+.nav-item:hover { background: rgba(255,255,255,0.06); color: #e2d9f3; }
+.nav-item.active { background: rgba(124,58,237,0.18); color: #fff; border-left-color: #7c3aed; }
+.nav-icon { font-size: 17px; width: 22px; text-align: center; }
+.nav-badge { background: #ef4444; color: white; font-size: 10px; font-weight: bold; padding: 1px 6px; border-radius: 10px; margin-left: auto; }
+
+/* Main */
+.main { flex: 1; overflow-y: auto; padding: 30px 32px; min-height: 0; }
+.page { display: none; animation: fadeIn 0.2s; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.page-header { margin-bottom: 26px; }
+.page-title { font-size: 22px; font-weight: bold; color: #1e293b; }
+.page-subtitle { font-size: 13px; color: #64748b; margin-top: 4px; }
+
+/* Cards */
+.card { background: white; border-radius: 12px; padding: 22px; margin-bottom: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+.card-title { font-size: 14px; font-weight: bold; color: #374151; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.card-title .icon { font-size: 16px; }
+
+/* Grid */
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 18px; }
+.grid-4 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 18px; }
+
+/* Stat Cards */
+.stat-card { background: white; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+.stat-label { font-size: 11px; color: #64748b; margin-bottom: 6px; }
+.stat-value { font-size: 26px; font-weight: bold; color: #1e293b; }
+.stat-sub { font-size: 11px; color: #94a3b8; margin-top: 3px; }
+.stat-accent { border-top: 3px solid #7c3aed; }
+.stat-green { border-top: 3px solid #10b981; }
+.stat-amber { border-top: 3px solid #f59e0b; }
+
+/* Simulator */
+.sim-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 10px 14px; background: #faf9ff; border-radius: 8px; }
+.sim-label { width: 190px; font-size: 12px; color: #374151; flex-shrink: 0; line-height: 1.4; }
+.sim-price { width: 80px; font-size: 11px; color: #7c3aed; flex-shrink: 0; }
+.sim-slider { flex: 1; accent-color: #7c3aed; cursor: pointer; }
+.sim-count { width: 32px; text-align: center; font-size: 13px; font-weight: bold; color: #1e293b; }
+.sim-amount { width: 100px; text-align: right; font-size: 12px; font-weight: bold; color: #374151; }
+.sim-total-bar { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: linear-gradient(135deg, #7c3aed, #a855f7); border-radius: 10px; color: white; margin-top: 10px; }
+.sim-total-label { font-size: 13px; opacity: 0.9; }
+.sim-total-value { font-size: 26px; font-weight: bold; }
+.sim-target-bar { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.sim-target-label { font-size: 12px; color: #64748b; }
+.sim-progress-track { flex: 1; height: 8px; background: #e9d5ff; border-radius: 4px; overflow: hidden; }
+.sim-progress-fill { height: 100%; background: #7c3aed; border-radius: 4px; transition: width 0.3s; }
+.sim-pct { font-size: 12px; font-weight: bold; color: #7c3aed; }
+
+/* Dashboard Strategy */
+.strategy-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.strategy-card { border: 1px solid #ede9fe; border-top: 4px solid var(--accent, #7c3aed); border-radius: 8px; padding: 14px; background: #fff; min-height: 150px; }
+.strategy-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+.strategy-step { font-size: 10px; font-weight: bold; color: var(--accent, #7c3aed); background: #f5f3ff; border-radius: 10px; padding: 2px 8px; white-space: nowrap; }
+.strategy-name { font-size: 13px; font-weight: bold; color: #1e293b; line-height: 1.5; }
+.strategy-price { font-size: 18px; font-weight: bold; color: var(--accent, #7c3aed); margin-bottom: 6px; }
+.strategy-role { font-size: 12px; color: #64748b; line-height: 1.7; margin-bottom: 10px; }
+.strategy-next { font-size: 11px; color: #374151; background: #faf9ff; border-radius: 6px; padding: 8px; line-height: 1.6; }
+.ops-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.ops-item { background: #faf9ff; border: 1px solid #ede9fe; border-radius: 8px; padding: 12px; }
+.ops-label { font-size: 10px; font-weight: bold; color: #7c3aed; margin-bottom: 6px; }
+.ops-title { font-size: 13px; font-weight: bold; color: #1e293b; margin-bottom: 5px; }
+.ops-text { font-size: 11px; color: #64748b; line-height: 1.6; }
+.research-report-head { background: #faf9ff; border: 1px solid #ede9fe; border-radius: 8px; padding: 14px; margin-bottom: 14px; }
+.research-report-title { font-size: 14px; font-weight: bold; color: #1e293b; margin-bottom: 6px; line-height: 1.5; }
+.research-report-meta { font-size: 11px; color: #7c3aed; margin-bottom: 8px; }
+.research-report-summary { font-size: 12px; color: #64748b; line-height: 1.7; }
+.research-summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+.research-summary-card { background: #fff; border: 1px solid #ede9fe; border-radius: 8px; padding: 12px; }
+.research-summary-label { font-size: 10px; font-weight: bold; color: #7c3aed; margin-bottom: 5px; }
+.research-summary-title { font-size: 13px; font-weight: bold; color: #1e293b; margin-bottom: 5px; }
+.research-summary-text { font-size: 12px; color: #64748b; line-height: 1.6; }
+.research-action-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.research-action { font-size: 12px; color: #374151; background: #fff; border: 1px dashed #ddd6fe; border-radius: 8px; padding: 9px; line-height: 1.6; }
+.research-chip-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.research-chip { font-size: 11px; color: #5b21b6; background: #ede9fe; border-radius: 20px; padding: 4px 10px; }
+.research-detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.research-detail-block { background: #faf9ff; border: 1px solid #ede9fe; border-radius: 8px; padding: 12px; }
+.research-detail-heading { font-size: 12px; font-weight: bold; color: #7c3aed; margin-bottom: 8px; }
+.research-detail-list { display: grid; gap: 8px; }
+.research-detail-item { font-size: 12px; color: #374151; line-height: 1.7; }
+.research-source-box { background: #111827; color: #e5e7eb; border-radius: 8px; padding: 14px; font-size: 12px; line-height: 1.8; white-space: pre-wrap; overflow: auto; max-height: 420px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+.research-source-box.preview { max-height: 170px; margin-top: 12px; }
+.research-source-note { font-size: 11px; color: #64748b; line-height: 1.6; margin-bottom: 10px; }
+.research-source-link { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: bold; color: #7c3aed; background: #f3e8ff; border-radius: 8px; padding: 6px 10px; margin-top: 10px; cursor: pointer; }
+.threads-sample-list { display: grid; gap: 8px; margin-top: 12px; }
+.threads-sample-item { background: #fff; border: 1px solid #ede9fe; border-radius: 8px; padding: 10px; }
+.threads-sample-top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; margin-bottom: 5px; }
+.threads-sample-theme { font-size: 12px; font-weight: bold; color: #1e293b; line-height: 1.5; }
+.threads-sample-engagement { font-size: 10px; font-weight: bold; color: #7c3aed; background: #f3e8ff; border-radius: 10px; padding: 2px 8px; white-space: nowrap; }
+.threads-sample-meta { font-size: 11px; color: #64748b; line-height: 1.6; }
+.threads-sample-url { font-size: 11px; color: #7c3aed; word-break: break-all; margin-top: 5px; }
+
+/* Roadmap */
+.roadmap-item { display: flex; gap: 14px; }
+.roadmap-left { display: flex; flex-direction: column; align-items: center; width: 44px; flex-shrink: 0; }
+.roadmap-date-box { background: #f3e8ff; color: #7c3aed; font-size: 11px; font-weight: bold; padding: 3px 6px; border-radius: 6px; text-align: center; line-height: 1.4; }
+.roadmap-line { width: 2px; flex: 1; background: #e9d5ff; margin: 4px auto; min-height: 16px; }
+.roadmap-content { flex: 1; padding-bottom: 16px; }
+.roadmap-title { font-size: 13px; font-weight: bold; color: #1e293b; }
+.roadmap-desc { font-size: 12px; color: #64748b; margin-top: 3px; line-height: 1.6; }
+.roadmap-tag { display: inline-block; font-size: 10px; padding: 1px 8px; border-radius: 10px; margin-top: 5px; }
+.tag-sns { background: #dbeafe; color: #1d4ed8; }
+.tag-edu { background: #d1fae5; color: #065f46; }
+.tag-sales { background: #fce7f3; color: #be185d; }
+
+/* AI Team */
+.ai-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.ai-card { background: white; border-radius: 12px; padding: 22px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); border-top: 4px solid #7c3aed; }
+.ai-card.research { border-top-color: #f59e0b; }
+.ai-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.ai-name { font-size: 15px; font-weight: bold; color: #1e293b; }
+.ai-emoji { font-size: 24px; }
+.ai-role-badge { display: inline-block; font-size: 11px; color: #7c3aed; background: #f3e8ff; padding: 2px 10px; border-radius: 12px; margin-bottom: 12px; }
+.ai-card.research .ai-role-badge { color: #b45309; background: #fef3c7; }
+.ai-desc { font-size: 12px; color: #64748b; line-height: 1.8; margin-bottom: 14px; }
+.ai-outputs { margin-bottom: 16px; }
+.ai-output-item { font-size: 12px; color: #374151; padding: 5px 0; border-bottom: 1px dashed #f1f5f9; display: flex; gap: 6px; align-items: flex-start; }
+.ai-output-item::before { content: '▸'; color: #7c3aed; flex-shrink: 0; margin-top: 1px; }
+.ai-card.research .ai-output-item::before { color: #f59e0b; }
+
+/* Buttons */
+.btn { padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer; font-size: 12px; font-weight: bold; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+.btn-primary { background: #7c3aed; color: white; }
+.btn-primary:hover { background: #6d28d9; transform: translateY(-1px); }
+.btn-amber { background: #f59e0b; color: white; }
+.btn-amber:hover { background: #d97706; transform: translateY(-1px); }
+.btn-success { background: #10b981; color: white; }
+.btn-success:hover { background: #059669; }
+.btn-danger { background: #ef4444; color: white; }
+.btn-danger:hover { background: #dc2626; }
+.btn-ghost { background: #f3e8ff; color: #7c3aed; }
+.btn-ghost:hover { background: #e9d5ff; }
+.btn-sm { padding: 5px 12px; font-size: 11px; }
+
+/* Posts */
+.post-toolbar { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; align-items: center; }
+.filter-btn { padding: 6px 14px; border-radius: 20px; border: 1px solid #e2e8f0; background: white; cursor: pointer; font-size: 12px; color: #64748b; transition: all 0.15s; }
+.filter-btn:hover { border-color: #7c3aed; color: #7c3aed; }
+.filter-btn.active { background: #7c3aed; color: white; border-color: #7c3aed; }
+.post-summary { display: flex; gap: 20px; padding: 14px 20px; background: white; border-radius: 10px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.ps-item { text-align: center; }
+.ps-num { font-size: 22px; font-weight: bold; }
+.ps-num.pending { color: #f59e0b; }
+.ps-num.approved { color: #10b981; }
+.ps-num.rejected { color: #ef4444; }
+.ps-label { font-size: 11px; color: #64748b; }
+.post-card { background: white; border-radius: 10px; padding: 18px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border-left: 4px solid #f59e0b; transition: border-color 0.2s, opacity 0.2s; }
+.post-card.approved { border-left-color: #10b981; }
+.post-card.rejected { border-left-color: #ef4444; opacity: 0.55; }
+.post-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.post-meta { display: flex; align-items: center; gap: 8px; }
+.post-num { font-size: 11px; color: #94a3b8; }
+.type-badge { font-size: 10px; font-weight: bold; padding: 2px 9px; border-radius: 10px; }
+.type-共感 { background: #fce7f3; color: #be185d; }
+.type-教育 { background: #dbeafe; color: #1d4ed8; }
+.type-参加型 { background: #d1fae5; color: #065f46; }
+.type-興味づけ { background: #fef3c7; color: #92400e; }
+.status-badge { font-size: 10px; padding: 2px 9px; border-radius: 10px; }
+.status-pending { background: #fef3c7; color: #92400e; }
+.status-approved { background: #d1fae5; color: #065f46; }
+.status-rejected { background: #fee2e2; color: #991b1b; }
+.post-body { font-size: 13px; color: #374151; line-height: 1.85; white-space: pre-wrap; margin-bottom: 14px; max-height: 160px; overflow: hidden; transition: max-height 0.3s; }
+.post-body.expanded { max-height: 1000px; }
+.post-expand { font-size: 11px; color: #7c3aed; cursor: pointer; margin-bottom: 12px; }
+.post-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.schedule-input { border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px 8px; font-size: 12px; color: #374151; }
+.post-char-count { font-size: 11px; color: #94a3b8; margin-left: auto; }
+.edited-badge { font-size: 10px; background: #ede9fe; color: #7c3aed; padding: 2px 8px; border-radius: 10px; }
+.post-textarea { width: 100%; min-height: 180px; border: 1px solid #a78bfa; border-radius: 8px; padding: 12px; font-size: 13px; color: #374151; line-height: 1.85; resize: vertical; font-family: inherit; outline: none; margin-bottom: 8px; }
+.post-textarea:focus { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
+.edit-footer { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.edit-char { font-size: 11px; color: #94a3b8; }
+.edit-char.over { color: #ef4444; }
+.sched-box { background: #faf9ff; border: 1px solid #e9d5ff; border-radius: 8px; padding: 10px 12px; margin-top: 10px; }
+.sched-recommend { font-size: 11px; color: #7c3aed; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.sched-recommend-label { background: #f3e8ff; padding: 1px 7px; border-radius: 10px; font-weight: bold; }
+.sched-inputs { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.sched-date { border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px 8px; font-size: 12px; color: #374151; }
+.sched-time { border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px 8px; font-size: 12px; color: #374151; width: 100px; }
+.sched-confirmed { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: bold; background: #d1fae5; color: #065f46; padding: 2px 9px; border-radius: 10px; }
+.sched-slot-tag { font-size: 10px; background: #ede9fe; color: #7c3aed; padding: 1px 7px; border-radius: 10px; }
+
+/* Funnel */
+.funnel-wrap { display: flex; gap: 24px; }
+.funnel-left { flex: 1; }
+.funnel-right { width: 280px; flex-shrink: 0; }
+.funnel-stage { margin-bottom: 6px; }
+.funnel-bar { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-radius: 8px; color: white; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
+.funnel-bar:hover { transform: translateX(4px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.funnel-product-name { font-size: 14px; font-weight: bold; }
+.funnel-product-cta { font-size: 11px; opacity: 0.85; margin-top: 2px; }
+.funnel-price-box { text-align: right; }
+.funnel-price-main { font-size: 15px; font-weight: bold; }
+.funnel-price-sub { font-size: 10px; opacity: 0.85; }
+.funnel-connector { display: flex; justify-content: center; align-items: center; height: 24px; color: #94a3b8; font-size: 18px; }
+.funnel-detail-card { background: white; border-radius: 10px; padding: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+.funnel-detail-title { font-size: 13px; font-weight: bold; color: #374151; margin-bottom: 12px; }
+.funnel-detail-empty { font-size: 13px; color: #94a3b8; text-align: center; padding: 20px 0; }
+.funnel-detail-row { display: flex; justify-content: space-between; font-size: 12px; padding: 6px 0; border-bottom: 1px dashed #f1f5f9; color: #374151; }
+.funnel-detail-row:last-child { border-bottom: none; }
+.flow-section { margin-top: 18px; }
+.flow-title { font-size: 13px; font-weight: bold; color: #374151; margin-bottom: 10px; }
+.flow-steps { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.flow-step { font-size: 11px; background: white; border: 1px solid #e2e8f0; padding: 5px 10px; border-radius: 6px; color: #374151; }
+.flow-arrow { color: #7c3aed; font-weight: bold; font-size: 14px; }
+
+/* Concept */
+.concept-block { margin-bottom: 22px; padding-bottom: 22px; border-bottom: 1px solid #f1f5f9; }
+.concept-block:last-child { border-bottom: none; }
+.concept-block h3 { font-size: 14px; font-weight: bold; color: #7c3aed; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.concept-text { font-size: 13px; color: #374151; line-height: 2; }
+.kw-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.kw-badge { background: #f3e8ff; color: #7c3aed; padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; border: 1px solid #e9d5ff; }
+.concept-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.concept-table th { background: #f3e8ff; color: #7c3aed; padding: 9px 14px; text-align: left; font-size: 12px; }
+.concept-table td { padding: 9px 14px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #374151; }
+.concept-table tr:last-child td { border-bottom: none; }
+.concept-table tr:hover td { background: #faf9ff; }
+.price-highlight { font-weight: bold; color: #7c3aed; }
+
+/* Accounts */
+.accounts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.acc-card { background: white; border-radius: 12px; padding: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); border-top: 3px solid #e2e8f0; transition: transform 0.15s, box-shadow 0.15s; }
+.acc-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.acc-card.active { border-top-color: #10b981; }
+.acc-card.setting { border-top-color: #f59e0b; }
+.acc-card.stopped { border-top-color: #ef4444; opacity: 0.6; }
+.acc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.acc-name { font-size: 14px; font-weight: bold; color: #1e293b; }
+.acc-genre-tag { font-size: 10px; color: #64748b; background: #f1f5f9; padding: 2px 8px; border-radius: 10px; margin-top: 3px; display: inline-block; }
+.acc-status-dot { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: bold; flex-shrink: 0; }
+.dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-active { background: #10b981; }
+.dot-setting { background: #f59e0b; }
+.dot-stopped { background: #ef4444; }
+.acc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 12px 0; }
+.acc-stat { text-align: center; background: #faf9ff; border-radius: 6px; padding: 6px 4px; }
+.acc-stat-num { font-size: 15px; font-weight: bold; color: #1e293b; }
+.acc-stat-label { font-size: 10px; color: #94a3b8; margin-top: 1px; }
+.acc-progress-wrap { margin-top: 10px; }
+.acc-progress-header { display: flex; justify-content: space-between; font-size: 11px; color: #64748b; margin-bottom: 5px; }
+.acc-progress-track { height: 6px; background: #f1f5f9; border-radius: 3px; overflow: hidden; }
+.acc-progress-fill { height: 100%; border-radius: 3px; transition: width 0.4s; }
+.acc-progress-fill.active { background: #10b981; }
+.acc-progress-fill.setting { background: #f59e0b; }
+.acc-progress-fill.stopped { background: #ef4444; }
+.acc-actions { margin-top: 12px; display: flex; gap: 6px; }
+.acc-select { border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px 8px; font-size: 11px; color: #374151; cursor: pointer; flex: 1; }
+.acc-cred-badge { font-size: 10px; padding: 1px 6px; border-radius: 8px; margin-left: 4px; vertical-align: middle; font-weight: 600; }
+.cred-input-wrap { position: relative; margin-top: 3px; }
+.cred-input-wrap input { display: block; width: 100%; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 32px 6px 10px; font-size: 12px; box-sizing: border-box; }
+.cred-input-wrap input:focus { outline: none; border-color: #a78bfa; }
+.cred-toggle { position: absolute; right: 7px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 13px; padding: 0; line-height: 1; }
+.cred-toggle:hover { color: #475569; }
+
+/* Modal */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; align-items: center; justify-content: center; }
+.modal-overlay.show { display: flex; }
+.modal-box { background: white; border-radius: 16px; padding: 30px; max-width: 500px; width: 92%; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+.modal-title { font-size: 17px; font-weight: bold; color: #1e293b; margin-bottom: 10px; }
+.modal-body { font-size: 13px; color: #64748b; line-height: 1.8; margin-bottom: 20px; }
+.modal-code { background: #1e293b; color: #a5f3fc; padding: 12px 16px; border-radius: 8px; font-family: monospace; font-size: 13px; margin: 12px 0; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+/* ===== Mobile ===== */
+@media (max-width: 768px) {
+  body { flex-direction: column; height: auto; overflow: auto; }
+  .sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; overflow-y: visible; padding-bottom: 4px; }
+  .sidebar-logo { width: 100%; padding: 14px 16px 10px; }
+  .nav-section { display: none; }
+  .nav-item { padding: 10px 14px; font-size: 12px; border-left: none; border-bottom: 3px solid transparent; }
+  .nav-item.active { border-left: none; border-bottom-color: #7c3aed; }
+  .main { padding: 16px; min-height: 0; }
+  .grid-3, .grid-4, .strategy-grid, .ops-grid, .research-summary-grid, .research-detail-grid { grid-template-columns: 1fr 1fr; }
+  .grid-2 { grid-template-columns: 1fr; }
+  .research-action-list { grid-template-columns: 1fr; }
+  .sim-row { flex-wrap: wrap; gap: 6px; }
+  .sim-label { width: 100%; }
+  .sim-price { width: auto; }
+  .post-summary { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .funnel-wrap { flex-direction: column; }
+  #accounts-grid { grid-template-columns: 1fr !important; }
+  .research-posts-grid, #research-posts-grid { grid-template-columns: 1fr !important; }
+  table { font-size: 11px; }
+  table th, table td { padding: 7px 8px; }
+}
+@media (max-width: 480px) {
+  .grid-3, .grid-4, .strategy-grid, .ops-grid, .research-summary-grid, .research-detail-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <h1>🌙 月詠あかり</h1>
+    <p>AI Marketing System v1.0</p>
+  </div>
+  <div class="nav-section">メイン</div>
+  <div class="nav-item active" onclick="navigate('dashboard')">
+    <span class="nav-icon">📊</span> ダッシュボード
+  </div>
+  <div class="nav-item" onclick="navigate('ai-team')">
+    <span class="nav-icon">🤖</span> AI社員チーム
+  </div>
+  <div class="nav-section">コンテンツ</div>
+  <div class="nav-item" onclick="navigate('posts')">
+    <span class="nav-icon">✍️</span> 投稿承認管理
+    <span class="nav-badge" id="pending-badge">30</span>
+  </div>
+  <div class="nav-item" onclick="navigate('research')">
+    <span class="nav-icon">🔍</span> リサーチ結果
+  </div>
+  <div class="nav-section">戦略</div>
+  <div class="nav-item" onclick="navigate('funnel')">
+    <span class="nav-icon">🔻</span> ファネル設計
+  </div>
+  <div class="nav-item" onclick="navigate('concept')">
+    <span class="nav-icon">📋</span> コンセプト
+  </div>
+  <div class="nav-section">運用</div>
+  <div class="nav-item" onclick="navigate('accounts')">
+    <span class="nav-icon">👤</span> アカウント管理
+  </div>
+</nav>
+
+<!-- Main Content -->
+<main class="main">
+
+  <!-- ① Dashboard -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-header">
+      <div class="page-title">ダッシュボード</div>
+      <div class="page-subtitle">2026年4月 — 月商目標と進捗管理</div>
+    </div>
+
+    <div class="grid-3">
+      <div class="stat-card stat-accent">
+        <div class="stat-label">月商シミュレーション</div>
+        <div class="stat-value" id="dash-sim-total">¥0</div>
+        <div class="stat-sub">スライダーで試算</div>
+      </div>
+      <div class="stat-card stat-green">
+        <div class="stat-label">承認済み投稿</div>
+        <div class="stat-value" id="dash-approved">0</div>
+        <div class="stat-sub">/ <span id="dash-total-posts">30</span>本</div>
+      </div>
+      <div class="stat-card stat-amber">
+        <div class="stat-label">今月のLINE目標</div>
+        <div class="stat-value">+100</div>
+        <div class="stat-sub">登録者増加目標</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🧭</span> 商品階段とアップセル設計</div>
+      <div class="strategy-grid" id="strategy-grid"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🛠️</span> 制作・運用メモ</div>
+      <div class="ops-grid">
+        <div class="ops-item">
+          <div class="ops-label">FRONT</div>
+          <div class="ops-title">夢日記ノート</div>
+          <div class="ops-text">CanvaでA4縦PDFを制作。14日分の記入ページと診断レポートへの導線を入れる。</div>
+        </div>
+        <div class="ops-item">
+          <div class="ops-label">MIDDLE</div>
+          <div class="ops-title">診断レポート</div>
+          <div class="ops-text">1〜3個の夢からテーマの入口を読む。根本パターンは深掘り鑑定へ接続。</div>
+        </div>
+        <div class="ops-item">
+          <div class="ops-label">HIGH</div>
+          <div class="ops-title">人生地図</div>
+          <div class="ops-text">夢・星・人生史を統合し、今後1年と30日間の行動地図を提示する。</div>
+        </div>
+        <div class="ops-item">
+          <div class="ops-label">REPEAT</div>
+          <div class="ops-title">月詠リズム調整</div>
+          <div class="ops-text">人生地図購入者限定。月ごとの現在地確認と軌道修正で継続購入につなげる。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🔍</span> リサーチエージェント レポート</div>
+      <div id="research-report-summary"></div>
+      <div class="research-summary-grid" id="research-platforms"></div>
+      <div class="research-action-list" id="research-actions"></div>
+      <div id="threads-samples-preview"></div>
+      <div id="research-source-preview"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">💰</span> 売上シミュレーター</div>
+      <div id="simulator-rows"></div>
+      <div class="sim-total-bar">
+        <span class="sim-total-label">今月の試算売上</span>
+        <span class="sim-total-value" id="sim-total">¥0</span>
+      </div>
+      <div class="sim-target-bar">
+        <span class="sim-target-label">月商目標 ¥500,000 達成率</span>
+        <div class="sim-progress-track"><div class="sim-progress-fill" id="sim-progress" style="width:0%"></div></div>
+        <span class="sim-pct" id="sim-pct">0%</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🗓️</span> 4月ロードマップ</div>
+      <div id="roadmap-items"></div>
+    </div>
+  </div>
+
+  <!-- ② AI Team -->
+  <div class="page" id="page-ai-team">
+    <div class="page-header">
+      <div class="page-title">AI社員チーム</div>
+      <div class="page-subtitle">月詠あかりを支える4体＋リサーチエージェント</div>
+    </div>
+    <div class="ai-grid" id="ai-cards"></div>
+  </div>
+
+  <!-- ③ Posts -->
+  <div class="page" id="page-posts">
+    <div class="page-header">
+      <div class="page-title">投稿承認管理</div>
+      <div class="page-subtitle" id="posts-subtitle">Threads投稿30本の確認・承認・スケジュール設定</div>
+    </div>
+    <div class="post-summary">
+      <div class="ps-item"><div class="ps-num pending" id="count-pending">30</div><div class="ps-label">未確認</div></div>
+      <div class="ps-item"><div class="ps-num approved" id="count-approved">0</div><div class="ps-label">承認済み</div></div>
+      <div class="ps-item"><div class="ps-num rejected" id="count-rejected">0</div><div class="ps-label">却下</div></div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+        <button class="btn btn-primary btn-sm" onclick="autoScheduleAll()">🗓️ 自動スケジュール設定</button>
+        <button class="btn btn-success btn-sm" onclick="approveAll()">✓ 全件承認</button>
+        <button class="btn btn-ghost btn-sm" onclick="resetAll()">↺ リセット</button>
+      </div>
+    </div>
+    <div class="post-toolbar">
+      <button class="filter-btn active" data-filter="all" onclick="filterPosts('all',this)">すべて (30)</button>
+      <button class="filter-btn" data-filter="共感" onclick="filterPosts('共感',this)">共感 (8)</button>
+      <button class="filter-btn" data-filter="教育" onclick="filterPosts('教育',this)">教育 (8)</button>
+      <button class="filter-btn" data-filter="参加型" onclick="filterPosts('参加型',this)">参加型 (7)</button>
+      <button class="filter-btn" data-filter="興味づけ" onclick="filterPosts('興味づけ',this)">興味づけ (7)</button>
+      <button class="filter-btn" data-filter="pending" onclick="filterPosts('pending',this)">未確認</button>
+      <button class="filter-btn" data-filter="approved" onclick="filterPosts('approved',this)">承認済み</button>
+    </div>
+    <div id="posts-container"></div>
+  </div>
+
+  <!-- ④ Funnel -->
+  <div class="page" id="page-funnel">
+    <div class="page-header">
+      <div class="page-title">ファネル設計</div>
+      <div class="page-subtitle">商品ラインと顧客導線の確認</div>
+    </div>
+    <div class="funnel-wrap">
+      <div class="funnel-left">
+        <div id="funnel-stages"></div>
+        <div class="flow-section card">
+          <div class="flow-title">🔗 顧客導線フロー</div>
+          <div class="flow-steps">
+            <div class="flow-step">Threads投稿</div><div class="flow-arrow">→</div>
+            <div class="flow-step">プロフィール</div><div class="flow-arrow">→</div>
+            <div class="flow-step">LINE登録</div><div class="flow-arrow">→</div>
+            <div class="flow-step">教育配信 (7本)</div><div class="flow-arrow">→</div>
+            <div class="flow-step">夢日記ノート<br><small>¥1,980</small></div><div class="flow-arrow">→</div>
+            <div class="flow-step">診断レポート<br><small>¥3,980</small></div><div class="flow-arrow">→</div>
+            <div class="flow-step">月額会員<br><small>¥4,980/月</small></div><div class="flow-arrow">→</div>
+            <div class="flow-step">深掘り鑑定<br><small>¥49,800</small></div><div class="flow-arrow">→</div>
+            <div class="flow-step">人生地図<br><small>¥198,000</small></div><div class="flow-arrow">→</div>
+            <div class="flow-step">月詠リズム調整<br><small>¥88,000</small></div>
+          </div>
+        </div>
+      </div>
+      <div class="funnel-right">
+        <div class="funnel-detail-card">
+          <div class="funnel-detail-title">商品詳細</div>
+          <div class="funnel-detail-empty" id="funnel-detail-empty">商品をクリックして詳細を確認</div>
+          <div id="funnel-detail-content" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑤ Concept -->
+  <div class="page" id="page-concept">
+    <div class="page-header">
+      <div class="page-title">コンセプト設計図</div>
+      <div class="page-subtitle">月詠あかり ver.3 — ブランドの根幹</div>
+    </div>
+    <div class="card">
+      <div class="concept-block">
+        <h3>🎯 ターゲット</h3>
+        <div class="concept-text">30〜40代女性（お金・キャリアの閉塞感を抱えている）</div>
+      </div>
+      <div class="concept-block">
+        <h3>❶ ターゲットの悩みの言語化</h3>
+        <div class="concept-text">努力しているのに、お金もキャリアも思うように動かない。<br>誰にも言えないまま、深夜にひとりで「なぜ私だけ」と問い続けている。<br>答えを求めて行動しても、どこか見えない壁に阻まれている感覚が消えない。</div>
+      </div>
+      <div class="concept-block">
+        <h3>❷ 解決できていない原因</h3>
+        <div class="concept-text">現実の表層だけを変えようとしているから。<br>本当の詰まりは、魂の深部に刻まれた見えないパターンにある。<br>そのパターンは毎晩、夢という形で語りかけているのに、誰もその声に耳を傾けてこなかった。</div>
+      </div>
+      <div class="concept-block">
+        <h3>❸ 月詠あかりだけが解決できる理由</h3>
+        <div class="concept-text">夢は魂が送る暗号。星はその魂の設計図。<br>月詠あかりは、夢の暗号を解読し、あなたの星の設計図と照らし合わせることで、見えない流れの正体を明らかにする。<br>これは占いではなく、魂の羅針盤を取り戻す旅。</div>
+      </div>
+      <div class="concept-block">
+        <h3>❹ 買った後の理想の未来</h3>
+        <div class="concept-text">長年感じていた「見えない壁」の正体が、霧が晴れるように明らかになる。<br>星の流れに乗った瞬間、お金もキャリアも抵抗なく動き始める。<br>もう迷わない。夢が毎晩、あなたの道を照らしてくれるから。</div>
+      </div>
+      <div class="concept-block">
+        <h3>❺ 刷り込みキーワード</h3>
+        <div class="kw-list">
+          <span class="kw-badge">「夢は魂が送る暗号」</span>
+          <span class="kw-badge">「星の設計図に還る」</span>
+          <span class="kw-badge">「見えない流れの扉を開く」</span>
+        </div>
+      </div>
+      <div class="concept-block" style="border-bottom:none;padding-bottom:0">
+        <h3>🛍️ 商品ライン</h3>
+        <table class="concept-table">
+          <thead><tr><th>商品名</th><th>価格</th><th>種別</th></tr></thead>
+          <tbody>
+            <tr><td>夢日記ノートPDF</td><td class="price-highlight">¥1,980</td><td>フロント商品</td></tr>
+            <tr><td>夢×星座 診断レポートPDF</td><td class="price-highlight">¥3,980</td><td>ミドル商品</td></tr>
+            <tr><td>月額会員（テキスト配信）</td><td class="price-highlight">¥4,980/月</td><td>サブスク</td></tr>
+            <tr><td>夢×星座 深掘り鑑定PDF</td><td class="price-highlight">¥49,800</td><td>バックエンド</td></tr>
+            <tr><td>特別鑑定「人生地図」</td><td class="price-highlight">¥198,000</td><td>プレミアム</td></tr>
+            <tr><td>月詠リズム調整セッション</td><td class="price-highlight">¥88,000</td><td>人生地図購入者向け継続商品</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- ⑥ Accounts -->
+  <div class="page" id="page-accounts">
+    <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <div>
+        <div class="page-title">アカウント管理</div>
+        <div class="page-subtitle" id="acc-page-subtitle">20アカウントの稼働状況・フォロワー・LINE登録数を管理</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="openAddAccountModal()" style="flex-shrink:0;margin-top:4px;">＋ アカウント追加</button>
+    </div>
+    <div class="grid-3" style="margin-bottom:18px;">
+      <div class="stat-card stat-accent">
+        <div class="stat-label">稼働中アカウント</div>
+        <div class="stat-value" id="acc-stat-active">1</div>
+        <div class="stat-sub" id="acc-stat-total-sub">/ 20アカウント</div>
+      </div>
+      <div class="stat-card stat-amber">
+        <div class="stat-label">設定中</div>
+        <div class="stat-value" id="acc-stat-setting">19</div>
+        <div class="stat-sub">アカウント</div>
+      </div>
+      <div class="stat-card stat-green">
+        <div class="stat-label">LINE登録 合計</div>
+        <div class="stat-value" id="acc-stat-line">0</div>
+        <div class="stat-sub">/ 目標 5,000人</div>
+      </div>
+    </div>
+    <div class="post-toolbar" id="acc-filters"></div>
+    <div id="accounts-grid"></div>
+  </div>
+
+  <div class="page" id="page-research">
+    <div class="page-header">
+      <div class="page-title">リサーチレポート</div>
+      <div class="page-subtitle">占い・スピリチュアル系SNSバズ投稿 完全分析（2026年4月）</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🧾</span> リサーチ結果サマリー</div>
+      <div id="research-report-detail"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">📄</span> リサーチ元データ</div>
+      <div class="research-source-note">リサーチエージェントが保存したMarkdown原文です。要約に使った根拠をそのまま確認できます。</div>
+      <div id="research-source-raw"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🧪</span> Threads実測サンプル</div>
+      <div class="research-source-note">リサーチエージェントがThreadsから取得できた公開投稿のURL・反応数・バズ根拠です。</div>
+      <div id="threads-samples-full"></div>
+    </div>
+
+    <!-- プラットフォーム分析 -->
+    <div class="card">
+      <div class="card-title"><span class="icon">📊</span> プラットフォーム別 優先度</div>
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead>
+          <tr style="background:#f8f5ff;">
+            <th style="padding:10px 14px;text-align:left;color:#374151;font-weight:bold;">SNS</th>
+            <th style="padding:10px 14px;text-align:center;color:#374151;font-weight:bold;">30代女性</th>
+            <th style="padding:10px 14px;text-align:center;color:#374151;font-weight:bold;">40代女性</th>
+            <th style="padding:10px 14px;text-align:center;color:#374151;font-weight:bold;">相性</th>
+            <th style="padding:10px 14px;text-align:left;color:#374151;font-weight:bold;">活用目的</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-top:1px solid #f0eef8;">
+            <td style="padding:10px 14px;font-weight:bold;">Threads</td>
+            <td style="padding:10px 14px;text-align:center;">★★★★★</td>
+            <td style="padding:10px 14px;text-align:center;">★★★★☆</td>
+            <td style="padding:10px 14px;text-align:center;"><span style="background:#7c3aed;color:white;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:bold;">最優先</span></td>
+            <td style="padding:10px 14px;color:#64748b;">認知拡大・世界観発信</td>
+          </tr>
+          <tr style="border-top:1px solid #f0eef8;background:#fafafa;">
+            <td style="padding:10px 14px;font-weight:bold;">Instagram</td>
+            <td style="padding:10px 14px;text-align:center;">★★★★★</td>
+            <td style="padding:10px 14px;text-align:center;">★★★★☆</td>
+            <td style="padding:10px 14px;text-align:center;"><span style="background:#3b82f6;color:white;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:bold;">第2優先</span></td>
+            <td style="padding:10px 14px;color:#64748b;">世界観統一・保存率UP・LINE誘導</td>
+          </tr>
+          <tr style="border-top:1px solid #f0eef8;">
+            <td style="padding:10px 14px;font-weight:bold;">X（Twitter）</td>
+            <td style="padding:10px 14px;text-align:center;">★★★★☆</td>
+            <td style="padding:10px 14px;text-align:center;">★★★☆☆</td>
+            <td style="padding:10px 14px;text-align:center;"><span style="background:#94a3b8;color:white;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:bold;">第3優先</span></td>
+            <td style="padding:10px 14px;color:#64748b;">拡散・短文共感・今日の運勢</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- バズる5つの型 -->
+    <div class="card">
+      <div class="card-title"><span class="icon">🔥</span> バズる投稿 5つの型</div>
+      <div class="grid-3" style="margin:0;">
+        <div style="background:#f8f5ff;border-radius:10px;padding:14px;border-left:4px solid #7c3aed;">
+          <div style="font-size:12px;font-weight:bold;color:#7c3aed;margin-bottom:6px;">① 診断・テスト型</div>
+          <div style="font-size:11px;color:#64748b;line-height:1.6;">「あなたはどのタイプ？」自己投影させる<br>コメント率・保存率が最も高い</div>
+          <div style="margin-top:8px;font-size:11px;color:#7c3aed;font-weight:bold;">LINE誘導 ★★★★★</div>
+        </div>
+        <div style="background:#fff7ed;border-radius:10px;padding:14px;border-left:4px solid #f59e0b;">
+          <div style="font-size:12px;font-weight:bold;color:#b45309;margin-bottom:6px;">② 秘密暴露型</div>
+          <div style="font-size:11px;color:#64748b;line-height:1.6;">「実は〇〇には△△の意味がある」<br>保存率・シェア率が高い</div>
+          <div style="margin-top:8px;font-size:11px;color:#f59e0b;font-weight:bold;">LINE誘導 ★★★★☆</div>
+        </div>
+        <div style="background:#fdf4ff;border-radius:10px;padding:14px;border-left:4px solid #a855f7;">
+          <div style="font-size:12px;font-weight:bold;color:#7e22ce;margin-bottom:6px;">③ 共感×深夜型</div>
+          <div style="font-size:11px;color:#64748b;line-height:1.6;">深夜の孤独・「なぜ私だけ」感情に直接訴求<br>いいね率・コメント率が最強</div>
+          <div style="margin-top:8px;font-size:11px;color:#a855f7;font-weight:bold;">LINE誘導 ★★★★★</div>
+        </div>
+        <div style="background:#f0fdf4;border-radius:10px;padding:14px;border-left:4px solid #10b981;">
+          <div style="font-size:12px;font-weight:bold;color:#065f46;margin-bottom:6px;">④ 予言・運勢型</div>
+          <div style="font-size:11px;color:#64748b;line-height:1.6;">「今月のあなたへ」時限性を持つ<br>保存率・即時反応が高い</div>
+          <div style="margin-top:8px;font-size:11px;color:#10b981;font-weight:bold;">LINE誘導 ★★★★☆</div>
+        </div>
+        <div style="background:#fff1f2;border-radius:10px;padding:14px;border-left:4px solid #ef4444;">
+          <div style="font-size:12px;font-weight:bold;color:#991b1b;margin-bottom:6px;">⑤ ビフォーアフター型</div>
+          <div style="font-size:11px;color:#64748b;line-height:1.6;">「〇〇だった私が△△になれた理由」<br>フォロー率・信頼構築に最強</div>
+          <div style="margin-top:8px;font-size:11px;color:#ef4444;font-weight:bold;">LINE誘導 ★★★★★</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Threadsアルゴリズム -->
+    <div class="card">
+      <div class="card-title"><span class="icon">⚡</span> Threadsアルゴリズム攻略ポイント</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div style="background:#f8f5ff;border-radius:8px;padding:12px;font-size:12px;color:#374151;line-height:1.7;">📌 投稿後<strong>15分の初速</strong>が最重要 — 早期いいね・コメントで拡散開始</div>
+        <div style="background:#f8f5ff;border-radius:8px;padding:12px;font-size:12px;color:#374151;line-height:1.7;">📝 投稿の63%は<strong>テキストのみ</strong>でも伸びる</div>
+        <div style="background:#f8f5ff;border-radius:8px;padding:12px;font-size:12px;color:#374151;line-height:1.7;">💬 <strong>質問フック</strong>でコメントを誘発 → アルゴリズム評価が上昇</div>
+        <div style="background:#fff7ed;border-radius:8px;padding:12px;font-size:12px;color:#374151;line-height:1.7;">⚠️ <strong>URLを本文に直貼り禁止</strong> — リンクはコメント欄へ</div>
+      </div>
+    </div>
+
+    <!-- キーワード -->
+    <div class="card">
+      <div class="card-title"><span class="icon">🔑</span> 刺さるキーワード分析</div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:12px;font-weight:bold;color:#64748b;margin-bottom:8px;">閉塞感・共感系</div>
+        <div id="kw-empathy" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:12px;font-weight:bold;color:#64748b;margin-bottom:8px;">希望・転換系</div>
+        <div id="kw-hope" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:bold;color:#64748b;margin-bottom:8px;">月詠あかり専用 刷り込みキーワード</div>
+        <div id="kw-brand" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+      </div>
+    </div>
+
+    <!-- 即使える投稿20本 -->
+    <div class="card">
+      <div class="card-title"><span class="icon">🌙</span> 即使えるThreads投稿 18本</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;" id="research-posts-grid"></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">閉じる</button>
+      <button class="btn btn-primary" id="modal-confirm" onclick="closeModal()">OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const researchReport = {
+  "title": "🌙 月詠あかり SNSバズ投稿 完全戦略マニュアル",
+  "createdAt": "2025年4月14日",
+  "sourcePath": "output/research-result.md",
+  "rawMarkdown": "リサーチ完了です。収集した全データを統合して、月詠あかり専用の完全マニュアルを生成します。\n\n---\n\n以下に、リサーチ結果と分析をもとにした完全版Markdownドキュメントを出力します。\n\n---\n\n# 🌙 月詠あかり SNSバズ投稿 完全戦略マニュアル\n**作成日：2025年4月14日**\n**対象プラットフォーム：Threads / Instagram / X（Twitter）**\n**ターゲット：30〜40代女性（お金・キャリアの閉塞感）**\n\n---\n\n## 📊 PART 1：リサーチ分析レポート\n\n### 1-1. プラットフォーム別 ターゲット接触戦略\n\n| SNS | 30代女性利用率 | 40代女性利用率 | 月詠あかりとの相性 | 主な活用目的 |\n|---|---|---|---|---|\n| **Threads** | ★★★★★ | ★★★★☆ | **最優先** | 認知拡大・世界観発信 |\n| **Instagram** | ★★★★★ | ★★★★☆ | **第2優先** | 世界観統一・保存率UP・LINE誘導 |\n| **X（Twitter）** | ★★★★☆ | ★★★☆☆ | **第3優先** | 拡散・短文共感・今日の運勢 |\n\n\u003e **根拠：** 30代女性はInstagram利用率が他の年代・性別より高い傾向があり、\n\u003e 40代女性は「趣味やライフスタイルが近い一般人の投稿」を参考にする傾向が強い。\n\u003e Threadsはフォロワーゼロからでも投稿内容次第で拡散される設計のため、\n\u003e 新規アカウントには特に有利なプラットフォーム。\n\n---\n\n### 1-2. スピリチュアル系バズ投稿の共通パターン分析\n\n実際にThreads・Instagram・X上でエンゲージメントを獲得している\n占い・スピリチュアル系投稿を分析した結果、以下の法則が確認された。\n\n#### ■ 投稿構造の黄金パターン\n\n\n【1行目】：スクロールを止める\"フック\"\n　↓\n【2〜4行目】：共感の深掘り（あなたのこと？と思わせる）\n　↓\n【5〜8行目】：原因の提示 or 秘密の暴露\n　↓\n【9〜11行目】：解決の光（希望・転換点）\n　↓\n【最終行】：問いかけ or 行動促進（コメント・保存・LINE）\n```\n\n#### ■ 書き出しの型（実際にバズった書き出しのパターン）\n\n| 型 | 例 |\n|---|---|\n| 問いかけ型 | 「深夜ひとりで『なんで私だけ』と思ったことある？」|\n| 断言型 | 「お金が動かない理由、占いの視点では全部説明できる。」|\n| 秘密暴露型 | 「実は、夢には魂からの暗号が隠されている。」|\n| 数字型 | 「3つのサインに気づいた人は、運命の転換期が近い。」|\n| 共感型 | 「頑張っているのに結果が出ない。それは努力の問題じゃない。」|\n\n#### ■ Threadsアルゴリズムの特性（バズの仕組み）\n\n- **投稿後15分の初速**が最重要：いいね・コメントが集まると「バズ候補」としてタグ付けされ、フォロワー外へ拡散開始\n- **テキストのみでも伸びる**：Threadsの投稿の63%はテキストのみ\n- **質問フック**でコメントを誘発すると、コメント→再投稿→プロフ訪問の多段連鎖が生まれアルゴリズム評価が上昇\n- **URLリンクを本文に直貼り禁止**：おすすめフィードに載りにくくなる。リンクはコメント欄へ\n- **等身大の自分・本物感**が Threadsでは特に響く（過度に作り込んだ投稿より生の声）\n\n---\n\n## 📋 PART 2：バズる要素の5分類\n\n### 型①：診断・テスト型（自分ごと化）\n**特徴：** 「あなたはどのタイプ？」と問いかけ、自己投影させる\n**エンゲージ：** コメント率・保存率が最も高い\n**LINE誘導適性：** ★★★★★\n\n### 型②：秘密暴露型（知らなかった情報）\n**特徴：** 「実は〇〇には△△の意味がある」と非公開情報を開示する演出\n**エンゲージ：** 保存率・シェア率が高い\n**LINE誘導適性：** ★★★★☆\n\n### 型③：共感×深夜型（感情の鏡）\n**特徴：** 深夜の孤独・閉塞感・「なぜ私だけ」感情に直接語りかける\n**エンゲージ：** コメント率・いいね率が最も高い（感情トリガー最強）\n**LINE誘導適性：** ★★★★★\n\n### 型④：予言・運勢型（今この瞬間）\n**特徴：** 「今月のあなたへ」「今夜の月が教えること」など時限性を持つ\n**エンゲージ：** 保存率・即時反応が高い\n**LINE誘導適性：** ★★★★☆\n\n### 型⑤：ビフォーアフター型（変化の実例）\n**特徴：** 「〇〇だった私が△△になれた理由」で変容ストーリーを語る\n**エンゲージ：** フォロー率・信頼構築に最強\n**LINE誘導適性：** ★★★★★\n\n---\n\n## 🔑 PART 3：キーワード分析\n\n### 3-1. 感情を刺激するワード（30〜40代女性に刺さる）\n\n```\n【閉塞感・共感系】\nなぜ私だけ / 見えない壁 / 報われない / 頑張っても動かない\n深夜にひとりで / 誰にも言えない / 疲れた / もう限界\n\n【希望・転換系】\n霧が晴れる / 流れが変わる / 扉が開く / 解放される\n星の流れに乗る / 本来の自分に戻る / 詰まりが取れる\n\n【神秘・世界観系】\n魂の暗号 / 夢のメッセージ / 星の設計図 / 見えない流れ\n羅針盤 / 魂の声 / 宇宙のサイン / 夢日記\n```\n\n### 3-2. 行動を促すワード\n\n```\n【保存促進】\n保存して / 後で見返して / 手帳に書いて\n【コメント促進】\nコメントで教えて / あなたはどう？ / 星座を教えて\n【LINE誘導】\n詳しくはプロフのLINEへ / 無料診断はLINEで / 今だけ無料\n```\n\n### 3-3. 月詠あかり専用 刷り込みキーワード\n\n```\n夢は魂が送る暗号\n星の設計図に還る\n見えない流れの扉を開く\n夢×星座の羅針盤\n魂の詰まりを解く\n```\n\n---\n\n## 🎯 PART 4：バズ投稿テンプレート（型別5パターン）\n\n---\n\n### ✅ テンプレート【型①】診断・自分ごと化型\n\n```\n型名：星座×夢タイプ診断型\n書き出し：「あなたの夢に出てくるものは、何ですか？」\n          ↓ または ↓\n          「この3つのうち、最近見た夢はどれに近い？」\n\n本文構成：\n① 選択肢を3〜5個提示（診断・テスト形式）\n② 「〇〇を選んだあなたへ」と結果をチラ見せ\n③ 「実はこれ、魂が送ってくるサインの種類が違う」\n④ 詳しい解読はLINEで → 誘導\n\n締め：\n「あなたはどれだったか、コメントで教えてください🌙」\n「詳しい夢の暗号解読は、プロフのLINEから」\n\n使用キーワード：\n魂が送るサイン / 夢の暗号 / 選んだあなたへ / コメント\n\n想定エンゲージメント：\nコメント率 ◎ / 保存率 ◎ / LINE登録率 ★最高★\n```\n\n---\n\n### ✅ テンプレート【型②】秘密暴露型\n\n```\n型名：「実は知らなかった」衝撃情報型\n書き出し：「実は夢に出てくる〇〇には、魂からの暗号が隠されている。」\n\n本文構成：\n① 「ほとんどの人が気づいていないが〜」で秘密感を演出\n② 「夢に〇〇が出る人は、魂がこのメッセージを送っている」\n③ 3つの具体例を箇条書きで提示（保存率UP）\n④ 「あなたの星の設計図と照らし合わせると、さらに深い意味がわかる」\n\n締め：\n「これを知っていたら、あの頃の私は違う選択ができていたかもしれない。\n保存しておいてください🌙」\n\n使用キーワード：\n実は / 知らなかった / 暗号 / 隠された / 保存\n\n想定エンゲージメント：\n保存率 ◎◎ / シェア率 ◎ / LINE登録率 ★高★\n```\n\n---\n\n### ✅ テンプレート【型③】共感×深夜型\n\n```\n型名：深夜の感情共鳴型\n書き出し：「深夜にひとりで、なぜ私だけ、と思ったことがある人へ。」\n\n本文構成：\n① 「努力しているのに、お金もキャリアも動かない。」（ターゲットの悩みを言語化）\n② 「それは、あなたの能力の問題じゃない。」（否定の否定＝救済）\n③ 「本当の詰まりは、魂の深部に刻まれたパターンにある。」（原因提示）\n④ 「そのパターンは、毎晩夢という形で語りかけているのに。」（フック）\n⑤ 「でも今夜から、その声に耳を傾けてみてほしい。」（光の提示）\n\n締め：\n「あなたの夢、どんな夢を見ていますか？\nコメントで教えてもらえると嬉しいです🌙」\n\n使用キーワード：\nなぜ私だけ / 努力 / 詰まり / 魂 / 深夜 / 今夜から\n\n想定エンゲージメント：\nいいね率 ◎◎ / コメント率 ◎◎ / LINE登録率 ★最高★\n```\n\n---\n\n### ✅ テンプレート【型④】予言・運勢型\n\n```\n型名：今月・今夜の時限性メッセージ型\n書き出し：「今夜の月が、あなたにこう言っています。」\n          ↓ または ↓\n          「今月、お金とキャリアが動き始める人の3つのサイン。」\n\n本文構成：\n① 「今この時期は、星の流れが〇〇座に向いている」\n② 「特に今夜夢を見た人は、魂が準備を始めているサイン」\n③ 「3つのサインのうち、2つ以上当てはまる人は転換期が近い」（具体的リスト）\n④ 「さらに詳しい今月の流れは、星の設計図で読み解ける」\n\n締め：\n「当てはまった人は「🌙」をコメントしてください。\n流れに乗る方法、教えます。」\n\n使用キーワード：\n今夜 / 今月 / サイン / 転換期 / 流れに乗る\n\n想定エンゲージメント：\n即時反応 ◎◎ / 保存率 ◎ / LINE登録率 ★高★\n```\n\n---\n\n### ✅ テンプレート【型⑤】ビフォーアフター型\n\n```\n型名：変容ストーリー型\n書き出し：「3年間、見えない壁の正体がわからなかった私が、\n　　　　　夢日記を始めて60日で変わったこと。」\n\n本文構成：\n① ビフォー：「努力しても変わらない日々。お金もキャリアも動かなかった。」\n② 転機：「ある夜の夢に気づいたとき、全てが繋がった。」\n③ アフター：「魂の詰まりが取れた瞬間、流れが変わり始めた。」\n④ 読者への問いかけ：「あなたも同じ壁を感じていませんか？」\n\n締め：\n「夢日記の始め方、プロフのLINEで無料でお伝えしています。\n今夜から始めてみてください🌙」\n\n使用キーワード：\n3年間 / 60日 / 変わった / 見えない壁 / 夢日記\n\n想定エンゲージメント：\nフォロー率 ◎◎ / LINE登録率 ★最高★ / 信頼構築 ◎◎\n```\n\n---\n\n## 🌙 PART 5：月詠あかり専用 即使えるThreads投稿 20本\n\n\u003e **投稿ルール**\n\u003e - 1投稿あたり200〜400文字（Threads最適）\n\u003e - 最初の1行でスクロールを止める\n\u003e - 絵文字は🌙✨🔮を基調に、1投稿3〜5個まで\n\u003e - URLは本文に入れず、コメント欄に誘導文として記載\n\u003e - 問いかけか保存促進で締める\n\n---\n\n### 投稿 No.1｜【共感×深夜型】\n\n```\n深夜にひとりで\n「なぜ私だけ、うまくいかないんだろう」\nと考えたことがある人へ。\n\nそれ、あなたの能力のせいじゃないです。\n\n頑張っているのに動かないのは、\n魂の深部に刻まれた「見えないパターン」が\n邪魔をしているから。\n\nそのパターンは毎晩、夢という形で\nあなたに語りかけています。\n\nでも誰も、その声の読み方を\n教えてくれなかっただけ。\n\n今夜見た夢、覚えていますか？🌙\n\nコメントで教えてもらえると\nその夢が持つメッセージをお伝えします。\n```\n\n---\n\n### 投稿 No.2｜【秘密暴露型】\n\n```\n実は夢には、星の設計図との\n「暗号の対応表」がある。\n\n🔮 水が出てくる夢 → 感情の流れが詰まっているサイン\n🔮 空を飛ぶ夢 → 魂が本来の軌道を思い出している\n🔮 知らない家をさまよう夢 → 新しい自分への扉が開きかけている\n\nほとんどの人が「変な夢を見た」で\n終わらせているけど、\n\n夢は魂が送る暗号。\n解読できれば、人生の詰まりが取れる。\n\n保存しておいてください🌙\n```\n\n---\n\n### 投稿 No.3｜【診断型】\n\n```\n最近よく見る夢、どれに近いですか？\n\nA）追いかけられる夢\nB）遅刻・間に合わない夢  \nC）高いところから落ちる夢\nD）知らない場所をさまよう夢\n\n✨ 実はこの4タイプ、\n　 魂が送っているSOSのカテゴリが全部違います。\n\nAを選んだあなたへ、Bを選んだあなたへ——\nそれぞれの暗号の意味と\n「詰まりの解き方」、コメント欄で教えます。\n\nあなたはどれでしたか？🌙\n```\n\n---\n\n### 投稿 No.4｜【予言・運勢型】\n\n```\n今月、お金とキャリアが\n静かに動き始める人の3つのサイン。\n\n① 夜中に目が覚めることが増えた\n② 最近、昔の夢・昔の自分を夢で見る\n③ 「このままでいいのか」という感覚が強くなっている\n\n✨ これ、悪いサインじゃない。\n\n魂が「次の扉を開く準備を始めた」という\n宇宙からの通知です。\n\n当てはまった人は「🌙」をコメントしてください。\n流れに乗る具体的な方法をお伝えします。\n```\n\n---\n\n### 投稿 No.5｜【ビフォーアフター型】\n\n```\n2年間、見えない壁を感じていた私が\n夢日記を始めて変わったこと。\n\n【Before】\n・努力しているのにお金が動かない\n・キャリアで何度も見えない壁にぶつかる\n・深夜に「なぜ私だけ」と泣いていた\n\n【After】\n・魂の詰まりの正体がわかった\n・星の流れに乗ったら抵抗がなくなった\n・夢が毎晩、道を照らしてくれるようになった\n\n変わったのは「夢の声に耳を傾けた」から。\n\nあなたも同じ壁を感じていませんか？🌙\n夢日記の始め方、プロフLINEで無料配布中。\n```\n\n---\n\n### 投稿 No.6｜【共感型】\n\n```\n「頑張っているのに\nなんで変わらないんだろう」\n\nこの問いを、何年も抱えている人がいる。\n\nその答えは、努力の方向ではなくて\n魂の設計図の中にあります。\n\n星はあなたの魂の設計図。\n夢は、その設計図を読む鍵。\n\nこの2つを合わせて初めて、\n「なぜ動かないのか」の正体が見える。\n\n霧が晴れるような感覚、\nあなたにも届けたいと思っています🌙\n```\n\n---\n\n### 投稿 No.7｜【秘密暴露×キャリア特化型】\n\n```\nキャリアで見えない壁を感じる人に、\n占星術師として言いたいこと。\n\nそれ、スキルの問題じゃないです。\n\n見えない壁の正体は、\n生まれたときから星に刻まれた\n「魂のパターン」であることが多い。\n\nそしてそのパターンは毎晩、\n夢という形で警告や導きを送ってくる。\n\n「また壁にぶつかった」と思ったとき、\n前夜の夢を思い出してみて。\n\n必ずヒントが隠されているから🔮\n```\n\n---\n\n### 投稿 No.8｜【予言型×新月・満月活用】\n\n```\n今夜は満月🌕\n\n満月の夜に夢を見た人へ、\n特別なメッセージがあります。\n\n満月は「魂の棚卸し」の夜。\nこの夜に見た夢は、\n星の設計図と最もリンクしやすいタイミング。\n\n今夜の夢、目が覚めたらすぐにメモして。\n\n✨ 何が出てきたか、覚えておいてください。\n　 その夢には必ず、\n　 今のあなたへの暗号が込められています。\n\n夢日記の書き方、プロフLINEで無料配布中🌙\n```\n\n---\n\n### 投稿 No.9｜【共感×お金特化型】\n\n```\nお金がなかなか動かない人に、\nよく共通していること。\n\n「もっと働かなきゃ」と思って\n表面だけを変えようとしている。\n\nでも本当の詰まりは、もっと深いところにある。\n\n魂の深部に刻まれた\n「お金への恐れのパターン」——\n\nこれは意識では気づけない。\n夢の中に、そのパターンが出てきます。\n\n「お金の夢」「数字の夢」「財布の夢」\n見たことがある人、実は多い。\n\nそれ、魂が送るSOSサインです🔮\n```\n\n---\n\n### 投稿 No.10｜【診断型×星座活用】\n\n```\nあなたの星座を教えてください🌙\n\n星座ごとに「魂の詰まりが出やすいパターン」が\n全然違います。\n\n例えば——\n🌟 蠍座：過去の傷が夢に繰り返し現れる\n🌟 山羊座：「足りない」感覚の夢が多い\n🌟 天秤座：選択できない場面の夢を見やすい\n\nあなたの星座、コメントで教えてください。\nその星座特有の夢の暗号と\n詰まりの解き方、お伝えします✨\n```\n\n---\n\n### 投稿 No.11｜【問いかけ型】\n\n```\nもし今夜、魂がひとつだけ\nあなたに言葉を届けられるとしたら、\n\n何を言うと思いますか？\n\n「もっと休んで」\n「その道で合っている」\n「恐れなくていい」\n「手放してもいい」\n\n——不思議なことに、\nこれと同じメッセージが\n夢の中に繰り返し現れている人がいます。\n\nあなたの夢は、どんな言葉を繰り返していますか？🌙\n```\n\n---\n\n### 投稿 No.12｜【教育型】\n\n```\n夢日記の始め方【3ステップ】\n\n夢日記は「起きてすぐ30秒」が命。\n\nSTEP1️⃣ 枕元にノートとペンを置く\n（スマホメモでも可。でも紙が魂に近い）\n\nSTEP2️⃣ 目が覚めたらすぐ書く\n「感情」「色」「出てきたもの」だけでいい\n\nSTEP3️⃣ 毎朝1行だけ星の流れと照らし合わせる\n（これが夢×星座の羅針盤になる）\n\n60日続けると、人生の詰まりの正体が\n霧が晴れるように見えてきます。\n\n保存しておいてください🌙\n```\n\n---\n\n### 投稿 No.13｜【共感×深夜型 上級】\n\n```\n午前2時、眠れないでいるあなたへ。\n\n「このままでいいのか」\n「なぜうまくいかないのか」\n「私には何かが足りないのか」\n\nこの問いは、弱さじゃない。\n\n魂が、本来の設計図に戻ろうとしている\nサインです。\n\n眠れない夜は、魂が最も声を出す夜。\n\n今感じている感覚を、紙に書いてみて。\n\nそれが明日の夢へのタネになるから🌙\n```\n\n---\n\n### 投稿 No.14｜【信頼構築型】\n\n```\n月詠あかりが「夢×星座」を読む理由。\n\n夢日記を5年間、毎日書き続けた。\nホロスコープを1000枚以上読んできた。\n\nわかったのは——\n\n夢と星は、同じ魂の設計図を\n違う言語で表現しているということ。\n\n夢は「今夜の魂の声」\n星は「生まれながらの魂の設計図」\n\nこの2つを合わせて初めて、\n「見えない壁」の正体が言葉になる。\n\nこれは占いじゃない。\n魂の羅針盤を取り戻す作業です🔮\n```\n\n---\n\n### 投稿 No.15｜【秘密暴露×保存促進型】\n\n```\n知っておいてほしい「夢のサイン」7つ\n\n🌙 歯が抜ける夢 → 言いたいことを抑えているサイン\n🌙 水が溢れる夢 → 感情が満杯で流れを求めている\n🌙 追いかけられる夢 → 向き合えていない何かがある\n🌙 空を飛ぶ夢 → 魂が本来の高さを思い出している\n🌙 試験・遅刻の夢 → 評価への恐れが魂に詰まっている\n🌙 知らない家の夢 → 新しい自分への扉が近い\n🌙 死ぬ夢 → 変容・再生のサイン（怖くない）\n\n全部、魂が送る暗号です。\n\n保存して、次に夢を見たとき\n見返してみてください🌙\n```\n\n---\n\n### 投稿 No.16｜【教育×お金型】\n\n```\nお金の流れをブロックしている\n魂のパターン、3タイプ。\n\n①「足りない」の夢を繰り返し見る人\n→ 星の設計図に「欠乏の刷り込み」がある可能性\n\n②夢に「数字」や「お金」が出てくる人\n→ お金への恐れと期待が同時に詰まっているサイン\n\n③夢に「走っても間に合わない」場面が出る人\n→ 焦りのパターンが流れを止めている\n\nどれか当てはまった人、\nコメントで「①」「②」「③」を教えてください。\n\n解決の糸口、お伝えします🔮\n```\n\n---\n\n### 投稿 No.17｜【刷り込み×世界観型】\n\n```\n夢は魂が送る暗号。\n星はその魂の設計図。\n\nこの2つを持っている人は、\n実はもう「答え」を全部持っている。\n\n迷子になっているんじゃなくて、\n暗号の読み方を知らなかっただけ。\n\n翻訳できた瞬間、\n霧が晴れる。\n\n流れに乗れる。\n\nお金もキャリアも、\n「抵抗なく動き始める」という\nその感覚——\n\n本当にあります🌙\n```\n\n---\n\n### 投稿 No.18｜【LINE誘導特化型】\n\n```\n今、",
+  "summary": "Threadsを最優先に、共感・診断・秘密暴露・予言・ビフォーアフターの5型でLINE誘導まで設計するSNS戦略レポート。",
+  "threadsSamples": [],
+  "platformPriority": [
+    {
+      "name": "Threads",
+      "priority": "最優先",
+      "purpose": "認知拡大・世界観発信"
+    },
+    {
+      "name": "Instagram",
+      "priority": "第2優先",
+      "purpose": "世界観統一・保存率UP・LINE誘導"
+    },
+    {
+      "name": "X（Twitter）",
+      "priority": "第3優先",
+      "purpose": "拡散・短文共感・今日の運勢"
+    }
+  ],
+  "buzzTypes": [
+    {
+      "name": "診断・テスト型（自分ごと化）",
+      "feature": "「あなたはどのタイプ？」と問いかけ、自己投影させる",
+      "engagement": "コメント率・保存率が最も高い",
+      "lineFit": "★★★★★"
+    },
+    {
+      "name": "秘密暴露型（知らなかった情報）",
+      "feature": "「実は〇〇には△△の意味がある」と非公開情報を開示する演出",
+      "engagement": "保存率・シェア率が高い",
+      "lineFit": "★★★★☆"
+    },
+    {
+      "name": "共感×深夜型（感情の鏡）",
+      "feature": "深夜の孤独・閉塞感・「なぜ私だけ」感情に直接語りかける",
+      "engagement": "コメント率・いいね率が最も高い（感情トリガー最強）",
+      "lineFit": "★★★★★"
+    },
+    {
+      "name": "予言・運勢型（今この瞬間）",
+      "feature": "「今月のあなたへ」「今夜の月が教えること」など時限性を持つ",
+      "engagement": "保存率・即時反応が高い",
+      "lineFit": "★★★★☆"
+    },
+    {
+      "name": "ビフォーアフター型（変化の実例）",
+      "feature": "「〇〇だった私が△△になれた理由」で変容ストーリーを語る",
+      "engagement": "フォロー率・信頼構築に最強",
+      "lineFit": "★★★★★"
+    }
+  ],
+  "algorithm": [
+    "**投稿後15分の初速**が最重要：いいね・コメントが集まると「バズ候補」としてタグ付けされ、フォロワー外へ拡散開始",
+    "**テキストのみでも伸びる**：Threadsの投稿の63%はテキストのみ",
+    "**質問フック**でコメントを誘発すると、コメント→再投稿→プロフ訪問の多段連鎖が生まれアルゴリズム評価が上昇",
+    "**URLリンクを本文に直貼り禁止**：おすすめフィードに載りにくくなる。リンクはコメント欄へ",
+    "**等身大の自分・本物感**が Threadsでは特に響く（過度に作り込んだ投稿より生の声）"
+  ],
+  "keywords": {
+    "empathy": [
+      "なぜ私だけ",
+      "見えない壁",
+      "報われない",
+      "頑張っても動かない\n深夜にひとりで",
+      "誰にも言えない",
+      "疲れた",
+      "もう限界"
+    ],
+    "hope": [
+      "霧が晴れる",
+      "流れが変わる",
+      "扉が開く",
+      "解放される\n星の流れに乗る",
+      "本来の自分に戻る",
+      "詰まりが取れる"
+    ],
+    "worldview": [
+      "魂の暗号",
+      "夢のメッセージ",
+      "星の設計図",
+      "見えない流れ"
+    ]
+  },
+  "actionItems": [
+    "Threadsは質問フックとコメント誘発を優先する",
+    "本文URL直貼りを避け、リンクはコメント欄へ回す",
+    "夢日記ノートへの導線は共感投稿と診断型投稿から作る",
+    "投稿後15分の初速を意識して運用する"
+  ]
+};
+
+const products = [
+  { id: 'note', name: '夢日記ノートPDF', price: 1980, max: 50, color: '#7c3aed', limit: null, cta: '今夜から始める', axis: 'まず夢を記録することから始まる', detail: [['納品', 'PDF即時配信'], ['ページ数', '約30P'], ['想定', 'LINE登録者への訴求']] },
+  { id: 'report', name: '夢×星座 診断レポート', price: 3980, max: 30, color: '#a855f7', limit: null, cta: '自分の設計図を受け取る', axis: 'あなたの夢と星座が示す本質を知る', detail: [['納品', 'PDF即時配信'], ['ページ数', '約50P'], ['想定', '夢日記ノート購入者へアップセル']] },
+  { id: 'member', name: '月額会員（テキスト配信）', price: 4980, max: 100, color: '#6366f1', limit: '先着100名', cta: '流れに乗り続ける', axis: '毎月の星の流れを味方につける', detail: [['配信', '月4〜8回テキスト配信'], ['特典', '会員限定Q&A'], ['限定', '先着100名']] },
+  { id: 'deep', name: '夢×星座 深掘り鑑定PDF', price: 49800, max: 5, color: '#ec4899', limit: '月5名限定', cta: '魂の地図を受け取る', axis: '2週間の夢日記から魂の地図を読み解く', detail: [['期間', '2週間の夢日記提出'], ['納品', 'PDF鑑定書'], ['限定', '月5名']] },
+  { id: 'vip', name: '特別鑑定「人生地図」', price: 198000, max: 3, color: '#f59e0b', limit: '月3名・新月のみ', cta: '人生地図の扉を開く', axis: '夢と星が交差する、あなただけの人生地図', detail: [['期間', '新月タイミング受付のみ'], ['内容', '包括的人生鑑定'], ['限定', '月3名']] },
+  { id: 'rhythm', name: '月詠リズム調整セッション', price: 88000, max: 5, color: '#10b981', limit: '人生地図購入者限定', cta: '今月の軌道を整える', axis: '人生地図をもとに月ごとの現在地と行動を調整する', detail: [['提出', '夢日記7日分'], ['納品', 'PDF10P＋30分解説'], ['目的', '継続購入・軌道修正']] },
+];
+
+const productStrategy = [
+  { step: 'STEP 1', name: '夢日記ノート', price: '¥1,980', color: '#7c3aed', role: '夢を記録するフロント商品。CanvaでA4縦PDFを作り、14日分の記入ページで素材を集める。', next: '7〜14日分の夢がたまったら、夢×星座 診断レポートへ案内。' },
+  { step: 'STEP 2', name: '夢×星座 診断レポート', price: '¥3,980', color: '#a855f7', role: '1〜3個の夢から今のテーマの入口を読む個別PDF。満足度を出しつつ、根本パターンは言い切らない。', next: '同じサインが続く人は、2週間分を見る深掘り鑑定へ。' },
+  { step: 'STEP 3', name: '夢×星座 深掘り鑑定PDF', price: '¥49,800', color: '#ec4899', role: '2週間分の夢の流れから、繰り返している魂のパターンと現実の詰まりを見る。', next: '人生全体の方向性まで整理したい人を人生地図へ。' },
+  { step: 'STEP 4', name: '特別鑑定「人生地図」', price: '¥198,000', color: '#f59e0b', role: '夢・星・人生史・お金・キャリアを統合し、今後1年と30日間の行動地図を作る最上位鑑定。', next: '納品7日後に月詠リズム調整セッションを案内。' },
+  { step: 'REPEAT', name: '月詠リズム調整セッション', price: '¥88,000', color: '#10b981', role: '人生地図を受けた人限定。毎月の夢の変化と現実の反応を見て、次の30日間を軌道修正する。', next: '単発で案内し、反応が良ければ3ヶ月パックへ。' },
+];
+
+const roadmapItems = [
+  { date: '4/8\n水', title: 'SNS投稿30本 生成完了', desc: '共感・教育・参加型・興味づけ各タイプを生成。承認フロー開始。', tag: 'sns' },
+  { date: '4/10\n金', title: 'Threads投稿 運用開始', desc: '承認済み投稿から順次Threadsへ投稿。1日1本ペース。', tag: 'sns' },
+  { date: '4/14\n火', title: '無料note 公開', desc: '「努力しているのにお金もキャリアも動かない本当の理由」公開。夢日記ノートへ誘導。', tag: 'edu' },
+  { date: '4/15\n水', title: 'LINE配信シリーズ開始', desc: '7本シリーズ「夢が教えてくれること」配信スタート。', tag: 'edu' },
+  { date: '4/21\n火', title: 'セールスLINE配信 (1/3)', desc: '欲求喚起＋問題提起。夢日記ノートへの誘導を本格化。', tag: 'sales' },
+  { date: '4/23\n木', title: 'セールスLINE配信 (2/3)', desc: '解決策＋商品紹介。夢日記ノート・診断レポートの価値訴求。', tag: 'sales' },
+  { date: '4/25\n土', title: 'セールスLINE配信 (3/3)', desc: '限定性＋CTA。購入リンク設置・申込促進。', tag: 'sales' },
+  { date: '4/27\n月', title: '新月 — 深掘り鑑定 受付開始', desc: '月5名限定の深掘り鑑定PDF受付。LINE登録者先行案内。', tag: 'sales' },
+  { date: '4/30\n木', title: '4月振り返り', desc: 'KPI集計：夢日記ノート販売数・LINE登録増加数・深掘り鑑定申込数', tag: 'sns' },
+];
+
+const aiTeam = [
+  {
+    name: 'AIマーケ責任者', emoji: '🎯', role: 'ディレクター', research: false,
+    desc: 'コンセプト設計図を常に参照し、SNS運用AI・教育AI・セールスAIの3体に具体的な指示を出す司令塔。ファネル全体を俯瞰して戦略を立案します。',
+    outputs: ['週次指示書の作成（SNS・教育・セールス）', 'ファネル整合性のチェック', '刷り込みキーワードの使用確認', 'KPI進捗レポートの評価'],
+    cmd: 'node ai-team/marketing-director/run.js'
+  },
+  {
+    name: 'SNS運用AI', emoji: '📱', role: 'SNS担当', research: false,
+    desc: 'Threads投稿を自動生成する専門AI。共感・教育・参加型・興味づけの4タイプを使い分け、全投稿をLINE登録への伏線として設計します。',
+    outputs: ['共感投稿（ターゲットの悩みを言語化）', '教育投稿（夢占い×星座の知識）', '参加型投稿（コメント誘発・アルゴリズム対策）', '興味づけ投稿（プロフィール・LINE誘導）'],
+    cmd: 'node ai-team/sns-ai/run.js'
+  },
+  {
+    name: '教育AI', emoji: '📚', role: '教育コンテンツ担当', research: false,
+    desc: '無料note・教育コラム・LINE配信を通じてお客さんの心理を7ステップで段階的に変容させる専門AI。購買心理の流れを設計します。',
+    outputs: ['無料note（2000〜3000文字）', 'LINE配信シリーズ7本', '教育コラム（800〜1200文字）', '7ステップ心理変容設計'],
+    cmd: 'node ai-team/education-ai/run.js'
+  },
+  {
+    name: 'セールスAI', emoji: '💎', role: 'セールス担当', research: false,
+    desc: 'セールスレター・LINE配信・申込導線を設計し、お客さんを購買行動に動かす専門AI。商品別に訴求軸・限定性・CTAを最適化します。',
+    outputs: ['商品別セールスレター', 'セールスLINE配信（3本シリーズ）', 'CTA文言の生成', '限定性・緊急性の設計'],
+    cmd: 'node ai-team/sales-ai/run.js'
+  },
+  {
+    name: 'リサーチエージェント', emoji: '🔍', role: 'リサーチ担当', research: true,
+    desc: 'Threadsの公開投稿URL・反応数・投稿テーマを優先取得し、占い・スピリチュアル系SNSで伸びている型を分析する調査特化AI。',
+    outputs: ['Threads実測サンプルの取得', 'バズ投稿の5型分類と構造分析', '感情・行動・世界観キーワード抽出', '即使えるThreads投稿20本生成'],
+    cmd: 'node ai-team/research-agent/research.js'
+  },
+];
+
+const posts = [
+  { id:1, type:'共感', status:'pending', scheduledTime:'', content:`深夜にひとりで、「なぜ私だけ」と思ったことがある人へ🌙
+
+努力しているのに、お金もキャリアも思うように動かない。
+誰にも言えないまま、見えない壁にぶつかり続ける日々。
+
+それ、あなたの能力のせいじゃないです。
+
+本当の詰まりは、魂の深部に刻まれた見えないパターンにある。
+そのパターンは毎晩、夢という形で語りかけているのに、
+誰もその声の読み方を教えてくれなかっただけ。
+
+夢は魂が送る暗号。
+その暗号を読み解けたら、霧が晴れるように流れが変わり始めます✨
+
+今夜見た夢、覚えていますか？
+コメントで教えてください🌙` },
+  { id:2, type:'教育', status:'pending', scheduledTime:'', content:`実は夢には、星の設計図との「暗号の対応表」がある🔮
+
+🌙 水が出てくる夢 → 感情の流れが詰まっているサイン
+🌙 空を飛ぶ夢 → 魂が本来の軌道を思い出している
+🌙 知らない家をさまよう夢 → 新しい自分への扉が開きかけている
+
+ほとんどの人が「変な夢を見た」で終わらせているけど、
+夢は魂が送る暗号。
+
+解読できれば、人生の詰まりが取れる。
+あなたの星座と照らし合わせると、さらに深い意味がわかります✨
+
+保存して、今夜から夢を観察してみてください🌙` },
+  { id:3, type:'参加型', status:'pending', scheduledTime:'', content:`最近よく見る夢、どれに近いですか？
+
+A）追いかけられる夢
+B）遅刻・間に合わない夢
+C）高いところから落ちる夢
+D）知らない場所をさまよう夢
+
+実はこの4タイプ、魂が送っているSOSのカテゴリが全部違います🌙
+
+Aを選んだ人は「逃げ続けているもの」がある。
+Bを選んだ人は「本当の時間軸」とズレている。
+Cを選んだ人は「手放すべき執着」がある。
+Dを選んだ人は「新しい自分」を探している。
+
+詳しい暗号の意味は、プロフのLINEで解説しています✨
+
+あなたはどれでしたか？
+コメントで教えてください🌙` },
+  { id:4, type:'興味づけ', status:'pending', scheduledTime:'', content:`なぜ私だけ、報われないんだろう。
+
+この問いを何年も抱えていた人へ🌙
+
+答えはシンプル。
+あなたは、星の設計図と違う生き方を「強いられて」いるから。
+
+本来の流れに還れば、抵抗はなくなる。
+お金もキャリアも、自然に動き始める✨
+
+でもその流れの入口は、毎晩あなたが見ている夢の中にある。
+
+見えない流れの扉を開く鍵、
+それが「夢×星座」の羅針盤です🔮
+
+あなたの星座と最近の夢、プロフのLINEで教えてもらえますか？
+扉を開くヒントをお伝えします🌙` },
+  { id:5, type:'共感', status:'pending', scheduledTime:'', content:`「頑張っているのに、なんで変わらないんだろう」
+
+この問いを、何年も抱えている人へ✨
+
+現実の表層だけを変えようとしているから、動かないんです。
+
+本当の詰まりは、もっと深いところにある。
+魂の深部に刻まれた見えないパターン。
+
+そのパターンは毎晩、夢という形であなたに語りかけている。
+でも誰も、その声に耳を傾けてこなかった🌙
+
+今夜から、夢を記録してみてください。
+魂の声が、あなたを本来の道へ導き始めます。
+
+夢日記の始め方、プロフのLINEで無料配布中🔮
+手に入れてみませんか？` },
+  { id:6, type:'教育', status:'pending', scheduledTime:'', content:`夢に「亡くなった人」が出てくる本当の意味🌙
+
+占星術的に言うと、これは「魂の記憶」が動いているサイン。
+
+あなたの星の設計図の中で、
+今まで眠っていた部分が目覚め始めると、
+過去の記憶や大切な人が夢に現れます✨
+
+これは「悲しみ」じゃなくて「準備」。
+
+魂が、次のステージへ進む準備を始めている証拠。
+夢は魂が送る暗号。その暗号を読み解けば、
+あなたが今何を手放し、何を受け取るべきかが見えてきます🔮
+
+最近、誰が夢に出てきましたか？
+コメントで教えてください🌙` },
+  { id:7, type:'参加型', status:'pending', scheduledTime:'', content:`あなたの星座を教えてください🌙
+
+実は星座ごとに、夢に出やすいシンボルが違います。
+
+🔮 火の星座（牡羊・獅子・射手）→ 炎・戦い・スピード
+🔮 地の星座（牡牛・乙女・山羊）→ 土・建物・お金
+🔮 風の星座（双子・天秤・水瓶）→ 空・会話・風景
+🔮 水の星座（蟹・蠍・魚）→ 水・感情・人間関係
+
+あなたの星座と最近見た夢、照らし合わせると
+「魂が今、何を伝えようとしているか」が見えてきます✨
+
+コメントであなたの星座と夢の内容を教えてください。
+簡単なメッセージを返信します🌙` },
+  { id:8, type:'興味づけ', status:'pending', scheduledTime:'', content:`2年間、見えない壁を感じていた私が、
+夢日記を始めて60日で変わったこと🌙
+
+【Before】
+・努力してもお金が動かない
+・キャリアで何度も壁にぶつかる
+・深夜に「なぜ私だけ」と泣いていた
+
+【After】
+・魂の詰まりの正体がわかった
+・星の流れに乗ったら抵抗がなくなった
+・夢が毎晩、道を照らしてくれるようになった
+
+変わったのは「夢の声に耳を傾けた」から✨
+
+見えない流れの扉を開く鍵は、
+あなたの中にもうあります🔮
+
+夢日記の始め方、プロフのLINEで無料配布中。
+今夜から始めてみませんか？🌙` },
+  { id:9, type:'共感', status:'pending', scheduledTime:'', content:`誰にも言えないまま、深夜にひとりで答えを探している人へ🌙
+
+「なぜ私だけ、こんなに報われないんだろう」
+「頑張っても頑張っても、見えない壁がある」
+
+その感覚、間違ってないです。
+
+本当に壁はあるんです。
+でもその壁の正体は、努力不足でも能力不足でもない。
+
+魂の深部に刻まれた「見えないパターン」。
+
+そのパターンは毎晩、夢という形で語りかけている。
+でも誰も、その読み方を教えてくれなかった✨
+
+夢は魂が送る暗号。
+暗号を解けば、霧が晴れるように流れが変わり始めます🔮
+
+あなたも同じ壁を感じていますか？
+コメントで教えてください🌙` },
+  { id:10, type:'教育', status:'pending', scheduledTime:'', content:`夢に「同じ場所」が何度も出てくる人へ🌙
+
+実はこれ、魂があなたを「ある場所」へ連れ戻そうとしているサイン。
+
+占星術的に言うと、
+あなたの星の設計図には「本来いるべき場所」が記されています。
+
+でも今、そこからズレた場所にいると、
+魂が夢の中で何度も「ここだよ」と教えてくれる✨
+
+それが同じ場所・同じ風景・同じ建物として現れます🔮
+
+星の設計図に還る。
+その入口が、夢という暗号の中にあります。
+
+最近、同じ場所の夢を見ましたか？
+コメントで教えてください🌙` },
+  { id:11, type:'参加型', status:'pending', scheduledTime:'', content:`今夜、お金とキャリアが動き始める人の3つのサイン🌙
+
+① 夜中に目が覚めることが増えた
+② 最近、昔の夢・昔の自分を夢で見る
+③ 「このままでいいのか」という感覚が強くなっている
+
+✨ これ、悪いサインじゃないです。
+
+魂が「次の扉を開く準備を始めた」という宇宙からの通知。
+
+特に①と②が同時に来ている人は、
+星の流れが大きく動き始めています🔮
+
+当てはまった人は「🌙」をコメントしてください。
+見えない流れの扉を開く方法、お伝えします✨` },
+  { id:12, type:'興味づけ', status:'pending', scheduledTime:'', content:`努力しても変わらない理由、知りたくないですか？🌙
+
+答えはシンプル。
+あなたは「星の設計図」と違う生き方を強いられているから。
+
+本来の軌道に還れば、抵抗はなくなる。
+お金もキャリアも、自然に動き始めます✨
+
+でもその軌道の入口は、毎晩見ている夢の中にある。
+
+夢は魂が送る暗号。
+その暗号を星座と照らし合わせたとき、
+見えない流れの扉が開きます🔮
+
+あなたの星座と最近の夢、プロフのLINEで教えてもらえますか？
+扉を開くヒント、お伝えします🌙` },
+  { id:13, type:'共感', status:'pending', scheduledTime:'', content:`「頑張っても結果が出ない」
+
+この言葉を、何度も自分に言い聞かせてきた人へ🌙
+
+それ、頑張りが足りないんじゃないです。
+
+頑張る方向が、星の設計図とズレているだけ。
+
+本来の流れに還れば、
+同じ努力でも全く違う結果が生まれます✨
+
+でもその「本来の流れ」は、
+夢という暗号の中に隠されている。
+
+見えない壁の正体は、
+魂があなたに「違う道だよ」と教えているサイン🔮
+
+夢は魂が送る暗号。
+その声に耳を傾けてみませんか？
+
+夢日記の始め方、プロフのLINEで無料配布中🌙` },
+  { id:14, type:'教育', status:'pending', scheduledTime:'', content:`夢に「階段」が出てくる本当の意味🌙
+
+上る階段 → 魂が次のステージへ準備している
+下る階段 → 過去の記憶や執着を手放す時期
+途中で止まる階段 → 今、決断を求められている
+
+実は階段の夢は、あなたの星の設計図と深く関係しています✨
+
+上昇の星座（火・風）の人は「上る夢」が多く、
+深掘りの星座（地・水）の人は「下る夢」が多い傾向。
+
+夢は魂が送る暗号。
+星座と照らし合わせると、さらに深い意味が見えてきます🔮
+
+最近、階段の夢を見ましたか？
+保存して、今夜の夢を観察してみてください🌙` },
+  { id:15, type:'参加型', status:'pending', scheduledTime:'', content:`質問です🌙
+
+最近、夢の中で「急いでいる」感覚がありましたか？
+
+実はこれ、魂が「時間軸のズレ」を教えているサイン。
+
+本来のタイミングと、今のあなたの行動がズレていると、
+夢の中で「遅刻」「間に合わない」「急ぐ」というシーンが増えます✨
+
+特に土星が強い配置の人は、
+このタイプの夢をよく見る傾向があります🔮
+
+あなたは最近、急ぐ夢を見ましたか？
+「見た」「見ていない」をコメントで教えてください🌙` },
+  { id:16, type:'興味づけ', status:'pending', scheduledTime:'', content:`なぜ、同じ夢を何度も見るのか🌙
+
+答え：魂があなたに「まだ気づいていない」メッセージを送り続けているから。
+
+同じ夢を見るということは、
+星の設計図が示す「次の扉」が、まだ開かれていない証拠✨
+
+でもその扉の鍵は、夢の暗号の中にある。
+
+見えない流れの扉を開く。
+そのために必要なのは「夢×星座」の羅針盤🔮
+
+あなたが何度も見る夢、プロフのLINEで教えてもらえますか？
+扉を開くヒント、お伝えします🌙` },
+  { id:17, type:'共感', status:'pending', scheduledTime:'', content:`深夜にひとりで、誰にも言えない閉塞感を抱えている人へ🌙
+
+「見えない壁がある」
+「なぜ私だけ、こんなに報われないんだろう」
+
+その感覚、間違ってないです。
+
+本当に壁はあるんです。
+でもその壁の正体は、あなたの外にあるんじゃない。
+
+魂の深部に刻まれた「見えないパターン」。
+
+そのパターンは毎晩、夢という形で語りかけている✨
+でも誰も、その読み方を教えてくれなかった。
+
+夢は魂が送る暗号。
+暗号を解けば、詰まりが取れる。
+霧が晴れるように、流れが変わり始めます🔮
+
+あなたも同じ壁を感じていますか？
+コメントで教えてください🌙` },
+  { id:18, type:'教育', status:'pending', scheduledTime:'', content:`夢に「海」が出てくる人へ🌙
+
+実は海の夢には、3つのパターンがあります。
+
+🌙 穏やかな海 → 感情が整い始めているサイン
+🌙 荒れた海 → 抑えていた感情が表面化している
+🌙 深い海に潜る → 魂の深部にアクセスしている
+
+特に水の星座（蟹・蠍・魚）の人は、
+海の夢を通じて魂のメッセージを受け取りやすい傾向✨
+
+夢は魂が送る暗号。
+あなたの星座と照らし合わせると、
+今、何を手放し、何を受け取るべきかが見えてきます🔮
+
+最近、海の夢を見ましたか？
+保存して、今夜の夢を観察してみてください🌙` },
+  { id:19, type:'参加型', status:'pending', scheduledTime:'', content:`あなたの星座と「最近見た印象的な夢」を教えてください🌙
+
+実は星座ごとに、夢のメッセージの受け取り方が違います。
+
+火の星座 → 直感で受け取る
+地の星座 → 現実的なシンボルで受け取る
+風の星座 → 言葉やメッセージで受け取る
+水の星座 → 感情や雰囲気で受け取る
+
+あなたの星座と夢を照らし合わせると、
+魂が今、何を伝えようとしているかが見えてきます✨
+
+コメントで教えてもらえたら、
+簡単なメッセージを返信します🔮🌙` },
+  { id:20, type:'興味づけ', status:'pending', scheduledTime:'', content:`3年間、見えない壁の正体がわからなかった私が、
+夢×星座の羅針盤を手にして変わったこと🌙
+
+【Before】
+・努力しても、お金もキャリアも動かない
+・深夜に「なぜ私だけ」と泣いていた
+・答えを探しても、どこにもなかった
+
+【After】
+・魂の詰まりの正体がわかった
+・星の設計図に還ったら、流れが変わった
+・夢が毎晩、道を照らしてくれるようになった
+
+変わったのは「夢の声に耳を傾けた」から✨
+
+見えない流れの扉を開く鍵、
+それが夢という暗号です🔮
+
+夢日記の始め方、プロフのLINEで無料配布中🌙` },
+  { id:21, type:'共感', status:'pending', scheduledTime:'', content:`「このままでいいのか」と感じている人へ🌙
+
+その感覚、魂からのサインです。
+
+今の場所が「星の設計図とズレている」と、
+魂が教えてくれている。
+
+でもそのサインを無視して頑張り続けても、
+見えない壁は消えません✨
+
+本来の流れに還る。
+そのヒントは、毎晩見ている夢の中にある。
+
+夢は魂が送る暗号。
+その暗号を読み解けば、
+詰まりが取れて、扉が開きます🔮
+
+あなたも「このままでいいのか」と感じていますか？
+コメントで教えてください🌙` },
+  { id:22, type:'教育', status:'pending', scheduledTime:'', content:`夢に「道」が出てくる本当の意味🌙
+
+まっすぐな道 → 今の方向性が正しいサイン
+分かれ道 → 決断を求められている
+道に迷う → 星の設計図からズレている
+
+実は「道」の夢は、
+あなたの人生の軌道を映し出す鏡✨
+
+特に火星や木星が動いている時期は、
+道の夢を通じて「次の方向性」が示されます🔮
+
+夢は魂が送る暗号。
+星座と照らし合わせると、さらに深い意味が見えてきます。
+
+最近、道の夢を見ましたか？
+保存して、今夜の夢を観察してみてください🌙` },
+  { id:23, type:'参加型', status:'pending', scheduledTime:'', content:`質問です🌙
+
+最近、夢の中で「探している」感覚がありましたか？
+
+何かを探す夢・誰かを探す夢・場所を探す夢…
+
+実はこれ、魂が「本来のあなた」を探しているサイン✨
+
+星の設計図からズレた場所にいると、
+魂が夢の中で「本当の自分」を探し始めます🔮
+
+あなたは最近、探す夢を見ましたか？
+「見た」「見ていない」をコメントで教えてください🌙` },
+  { id:24, type:'興味づけ', status:'pending', scheduledTime:'', content:`なぜ、夢を記録すると人生が変わるのか🌙
+
+答え：夢は魂が送る暗号だから。
+
+毎晩、魂はあなたに
+「本来の道」「手放すべきもの」「受け取るべきもの」
+を教えている✨
+
+でもそれを記録しなければ、
+朝には忘れてしまう。
+
+夢日記をつける。
+それは、見えない流れの扉を開く鍵を手に入れること🔮
+
+星の設計図に還る。
+その入口が、夢という暗号の中にあります。
+
+夢日記の始め方、プロフのLINEで無料配布中🌙` },
+  { id:25, type:'共感', status:'pending', scheduledTime:'', content:`誰にも言えない閉塞感を、ひとりで抱えている人へ🌙
+
+「頑張っても、報われない」
+「見えない壁がある」
+「なぜ私だけ」
+
+その感覚、あなただけじゃないです。
+
+でもその壁の正体は、努力不足でも能力不足でもない。
+
+魂の深部に刻まれた見えないパターン。
+星の設計図とズレた場所で頑張っているから✨
+
+夢は魂が送る暗号。
+その暗号を読み解けば、
+霧が晴れるように、流れが変わり始めます🔮
+
+あなたも同じ壁を感じていますか？
+コメントで教えてください🌙` },
+  { id:26, type:'教育', status:'pending', scheduledTime:'', content:`夢に「知らない人」が出てくる本当の意味🌙
+
+実はこれ、「もうひとりのあなた」です。
+
+魂が「本来のあなた」を夢の中で見せている。
+
+今のあなたが星の設計図からズレていると、
+魂が「本当はこういう自分だよ」と教えてくれる✨
+
+特に月が動いている時期は、
+知らない人=本来の自分として現れやすい🔮
+
+夢は魂が送る暗号。
+星座と照らし合わせると、さらに深い意味が見えてきます。
+
+最近、知らない人が夢に出てきましたか？
+保存して、今夜の夢を観察してみてください🌙` },
+  { id:27, type:'参加型', status:'pending', scheduledTime:'', content:`あなたが最近見た夢の「色」を教えてください🌙
+
+実は夢の色には、魂のメッセージが込められています。
+
+🔮 青・水色 → 感情の浄化
+🔮 赤・オレンジ → 情熱の復活
+🔮 緑 → 癒しと再生
+🔮 白・金 → 魂の目覚め
+
+色と星座を照らし合わせると、
+今、あなたが何を受け取るべきかが見えてきます✨
+
+コメントで教えてもらえたら、
+簡単なメッセージを返信します🌙` },
+  { id:28, type:'興味づけ', status:'pending', scheduledTime:'', content:`2年間、答えを探し続けた私が、
+夢×星座の羅針盤を手にして気づいたこと🌙
+
+答えは外にはなかった。
+魂の中に、ずっとあった✨
+
+夢は魂が送る暗号。
+星は魂の設計図。
+
+その2つを照らし合わせたとき、
+見えない流れの扉が開く🔮
+
+詰まりが取れて、霧が晴れて、
+星の流れに乗った瞬間、
+お金もキャリアも抵抗なく動き始めます。
+
+あなたも同じ扉を開いてみませんか？
+
+夢日記の始め方、プロフのLINEで無料配布中🌙` },
+  { id:29, type:'共感', status:'pending', scheduledTime:'', content:`深夜に、誰にも言えない「なぜ私だけ」を抱えている人へ🌙
+
+それ、あなたの努力が足りないんじゃないです。
+
+頑張る方向が、星の設計図とズレているだけ。
+
+本来の流れに還れば、
+同じ努力でも全く違う結果が生まれます✨
+
+でもその「本来の流れ」は、
+夢という暗号の中に隠されている。
+
+夢は魂が送る暗号。
+その暗号を読み解けば、
+見えない壁の正体がわかります🔮
+
+あなたも同じ閉塞感を感じていますか？
+コメントで教えてください🌙` },
+  { id:30, type:'教育', status:'pending', scheduledTime:'', content:`夢に「空」が出てくる本当の意味🌙
+
+晴れた空 → 魂が解放され始めているサイン
+曇り空 → まだ手放せていないものがある
+星空 → 星の設計図に還る準備ができている
+
+実は空の夢は、あなたの魂の状態を映し出す鏡✨
+
+特に風の星座（双子・天秤・水瓶）の人は、
+空の夢を通じてメッセージを受け取りやすい🔮
+
+夢は魂が送る暗号。
+星座と照らし合わせると、
+今、何を手放し、何を受け取るべきかが見えてきます。
+
+最近、空の夢を見ましたか？
+保存して、今夜の夢を観察してみてください🌙` }
+];
+
+const simValues = { note: 5, report: 3, member: 10, deep: 1, vip: 0, rhythm: 1 };
+let currentFilter = 'all';
+
+// ===== NAVIGATION =====
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+function navigateFromButton(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => {
+    const target = n.getAttribute('onclick') || '';
+    n.classList.toggle('active', target.includes(`'${page}'`));
+  });
+  document.getElementById('page-' + page).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== SIMULATOR =====
+function buildSimulator() {
+  const container = document.getElementById('simulator-rows');
+  container.innerHTML = products.map(p => `
+    <div class="sim-row">
+      <div class="sim-label">${p.name}</div>
+      <div class="sim-price">¥${p.price.toLocaleString()}</div>
+      <input type="range" class="sim-slider" min="0" max="${p.max}" value="${simValues[p.id]}"
+        oninput="updateSim('${p.id}', this.value)">
+      <div class="sim-count" id="sim-count-${p.id}">${simValues[p.id]}</div>
+      <div class="sim-amount" id="sim-amount-${p.id}">¥${(simValues[p.id]*p.price).toLocaleString()}</div>
+    </div>
+  `).join('');
+  calcTotal();
+}
+
+function updateSim(id, val) {
+  val = parseInt(val);
+  simValues[id] = val;
+  const p = products.find(p => p.id === id);
+  document.getElementById('sim-count-' + id).textContent = val;
+  document.getElementById('sim-amount-' + id).textContent = '¥' + (val * p.price).toLocaleString();
+  calcTotal();
+}
+
+function calcTotal() {
+  let total = 0;
+  products.forEach(p => { total += simValues[p.id] * p.price; });
+  const target = 500000;
+  const pct = Math.min(100, Math.round(total / target * 100));
+  document.getElementById('sim-total').textContent = '¥' + total.toLocaleString();
+  document.getElementById('dash-sim-total').textContent = '¥' + total.toLocaleString();
+  if (document.getElementById('sim-progress')) {
+    document.getElementById('sim-progress').style.width = pct + '%';
+    document.getElementById('sim-pct').textContent = pct + '%';
+  }
+}
+
+// ===== PRODUCT STRATEGY =====
+function buildProductStrategy() {
+  document.getElementById('strategy-grid').innerHTML = productStrategy.map(item => `
+    <div class="strategy-card" style="--accent:${item.color}">
+      <div class="strategy-top">
+        <div class="strategy-name">${item.name}</div>
+        <div class="strategy-step">${item.step}</div>
+      </div>
+      <div class="strategy-price">${item.price}</div>
+      <div class="strategy-role">${item.role}</div>
+      <div class="strategy-next">次: ${item.next}</div>
+    </div>
+  `).join('');
+}
+
+// ===== RESEARCH REPORT =====
+function buildResearchReport() {
+  const fallbackSummary = 'リサーチエージェントを実行すると、最新レポートの要点がここに反映されます。';
+  const title = researchReport.title || 'リサーチエージェント レポート';
+  const created = researchReport.createdAt ? `作成日: ${researchReport.createdAt}` : `参照元: ${researchReport.sourcePath || 'output/research-result.md'}`;
+  const summary = researchReport.summary || fallbackSummary;
+  const rawMarkdown = researchReport.rawMarkdown || '';
+  const rawPreview = rawMarkdown.length > 900 ? `${rawMarkdown.slice(0, 900)}\n\n...` : rawMarkdown;
+  const threadsSamples = researchReport.threadsSamples || [];
+  const renderThreadsSamples = (samples, limit = samples.length) => {
+    const visible = samples.slice(0, limit);
+    if (!visible.length) {
+      return '<div class="research-detail-item">まだThreads実測サンプルはありません。リサーチエージェントを再実行すると、取得できた投稿URL・反応数・バズ根拠がここに表示されます。</div>';
+    }
+    return `<div class="threads-sample-list">${visible.map(sample => `
+      <div class="threads-sample-item">
+        <div class="threads-sample-top">
+          <div class="threads-sample-theme">${escHtml(sample.theme || 'テーマ未取得')}</div>
+          <div class="threads-sample-engagement">${escHtml(sample.engagement || '反応数未取得')}</div>
+        </div>
+        <div class="threads-sample-meta">${escHtml(sample.account || 'アカウント未取得')} / ${escHtml(sample.date || '日付未取得')}</div>
+        <div class="threads-sample-meta">根拠: ${escHtml(sample.reason || '取得不可')}</div>
+        ${sample.url ? `<div class="threads-sample-url">${escHtml(sample.url)}</div>` : ''}
+      </div>
+    `).join('')}</div>`;
+  };
+
+  const summaryEl = document.getElementById('research-report-summary');
+  if (summaryEl) {
+    summaryEl.innerHTML = `
+      <div class="research-report-head">
+        <div class="research-report-title">${escHtml(title)}</div>
+        <div class="research-report-meta">${escHtml(created)}</div>
+        <div class="research-report-summary">${escHtml(summary)}</div>
+      </div>
+    `;
+  }
+
+  const platformsEl = document.getElementById('research-platforms');
+  if (platformsEl) {
+    platformsEl.innerHTML = (researchReport.platformPriority || []).map(item => `
+      <div class="research-summary-card">
+        <div class="research-summary-label">${escHtml(item.priority || '')}</div>
+        <div class="research-summary-title">${escHtml(item.name || '')}</div>
+        <div class="research-summary-text">${escHtml(item.purpose || '')}</div>
+      </div>
+    `).join('');
+  }
+
+  const actionsEl = document.getElementById('research-actions');
+  if (actionsEl) {
+    actionsEl.innerHTML = (researchReport.actionItems || []).map((action, i) => `
+      <div class="research-action"><strong>${i + 1}.</strong> ${escHtml(action)}</div>
+    `).join('');
+  }
+
+  const samplesPreviewEl = document.getElementById('threads-samples-preview');
+  if (samplesPreviewEl) {
+    samplesPreviewEl.innerHTML = `
+      <div class="research-source-note">Threads実測サンプル ${threadsSamples.length}件</div>
+      ${renderThreadsSamples(threadsSamples, 3)}
+    `;
+  }
+
+  const sourcePreviewEl = document.getElementById('research-source-preview');
+  if (sourcePreviewEl) {
+    sourcePreviewEl.innerHTML = rawPreview ? `
+      <div class="research-source-note">元データ冒頭プレビュー</div>
+      <div class="research-source-box preview">${escHtml(rawPreview)}</div>
+      <div class="research-source-link" onclick="navigateFromButton('research')">全文をリサーチページで見る</div>
+    ` : '';
+  }
+
+  const detailEl = document.getElementById('research-report-detail');
+  if (detailEl) {
+    const buzzHtml = (researchReport.buzzTypes || []).map(type => `
+      <div class="research-detail-item">
+        <strong>${escHtml(type.name || '')}</strong><br>
+        ${escHtml(type.feature || '')}<br>
+        <span style="color:#7c3aed;">反応: ${escHtml(type.engagement || '')} / LINE誘導: ${escHtml(type.lineFit || '')}</span>
+      </div>
+    `).join('');
+    const algorithmHtml = (researchReport.algorithm || []).map(item => `<div class="research-detail-item">・${escHtml(item)}</div>`).join('');
+    const keywordGroups = [
+      { label: '閉塞感・共感系', words: researchReport.keywords?.empathy || [] },
+      { label: '希望・転換系', words: researchReport.keywords?.hope || [] },
+      { label: '神秘・世界観系', words: researchReport.keywords?.worldview || [] },
+    ];
+    const keywordsHtml = keywordGroups.map(group => `
+      <div style="margin-bottom:10px;">
+        <div class="research-detail-heading">${escHtml(group.label)}</div>
+        <div class="research-chip-list">
+          ${group.words.map(word => `<span class="research-chip">${escHtml(word)}</span>`).join('')}
+        </div>
+      </div>
+    `).join('');
+
+    detailEl.innerHTML = `
+      <div class="research-report-head">
+        <div class="research-report-title">${escHtml(title)}</div>
+        <div class="research-report-meta">${escHtml(created)}</div>
+        <div class="research-report-summary">${escHtml(summary)}</div>
+      </div>
+      <div class="research-detail-grid">
+        <div class="research-detail-block">
+          <div class="research-detail-heading">バズる投稿の型</div>
+          <div class="research-detail-list">${buzzHtml || '<div class="research-detail-item">リサーチ結果を同期すると表示されます。</div>'}</div>
+        </div>
+        <div class="research-detail-block">
+          <div class="research-detail-heading">Threads攻略ポイント</div>
+          <div class="research-detail-list">${algorithmHtml || '<div class="research-detail-item">リサーチ結果を同期すると表示されます。</div>'}</div>
+        </div>
+        <div class="research-detail-block" style="grid-column:1/-1;">
+          <div class="research-detail-heading">キーワード分析</div>
+          ${keywordsHtml}
+        </div>
+      </div>
+    `;
+  }
+
+  const rawEl = document.getElementById('research-source-raw');
+  if (rawEl) {
+    rawEl.innerHTML = rawMarkdown
+      ? `<div class="research-source-box">${escHtml(rawMarkdown)}</div>`
+      : '<div class="research-detail-item">リサーチ結果を同期すると元データが表示されます。</div>';
+  }
+
+  const samplesFullEl = document.getElementById('threads-samples-full');
+  if (samplesFullEl) {
+    samplesFullEl.innerHTML = renderThreadsSamples(threadsSamples);
+  }
+}
+
+// ===== ROADMAP =====
+function buildRoadmap() {
+  const tagClass = { sns: 'tag-sns', edu: 'tag-edu', sales: 'tag-sales' };
+  const tagLabel = { sns: 'SNS', edu: '教育', sales: 'セールス' };
+  document.getElementById('roadmap-items').innerHTML = roadmapItems.map((item, i) => `
+    <div class="roadmap-item">
+      <div class="roadmap-left">
+        <div class="roadmap-date-box">${item.date}</div>
+        ${i < roadmapItems.length - 1 ? '<div class="roadmap-line"></div>' : ''}
+      </div>
+      <div class="roadmap-content">
+        <div class="roadmap-title">${item.title}</div>
+        <div class="roadmap-desc">${item.desc}</div>
+        <span class="roadmap-tag ${tagClass[item.tag]}">${tagLabel[item.tag]}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== AI TEAM =====
+function buildAICards() {
+  document.getElementById('ai-cards').innerHTML = aiTeam.map(ai => `
+    <div class="ai-card ${ai.research ? 'research' : ''}">
+      <div class="ai-header">
+        <div>
+          <div class="ai-name">${ai.emoji} ${ai.name}</div>
+          <div class="ai-role-badge">${ai.role}</div>
+        </div>
+      </div>
+      <div class="ai-desc">${ai.desc}</div>
+      <div class="ai-outputs">
+        ${ai.outputs.map(o => `<div class="ai-output-item">${o}</div>`).join('')}
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn ${ai.research ? 'btn-amber' : 'btn-primary'} btn-sm"
+          onclick="showRunModal('${ai.name}', '${ai.cmd}')">
+          ▶ 実行
+        </button>
+        <button class="btn btn-ghost btn-sm"
+          onclick="showPromptModal('${ai.name}')">
+          📄 プロンプト確認
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function showRunModal(name, cmd) {
+  document.getElementById('modal-title').textContent = `${name} を実行`;
+  document.getElementById('modal-body').innerHTML = `
+    以下のコマンドをターミナルで実行してください：<br>
+    <div class="modal-code">cd ~/akari-project<br>${cmd}</div>
+    実行結果は <code>output/</code> フォルダに保存されます。
+  `;
+  document.getElementById('modal').classList.add('show');
+}
+
+function showPromptModal(name) {
+  const ai = aiTeam.find(a => a.name === name);
+  const folder = name === 'AIマーケ責任者' ? 'marketing-director' :
+                 name === 'SNS運用AI' ? 'sns-ai' :
+                 name === '教育AI' ? 'education-ai' :
+                 name === 'セールスAI' ? 'sales-ai' : 'research-agent';
+  document.getElementById('modal-title').textContent = `${name} — プロンプト`;
+  document.getElementById('modal-body').innerHTML = `
+    <div class="modal-code">~/akari-project/ai-team/${folder}/prompt.md</div>
+    ターミナルで以下を実行して確認できます：<br>
+    <div class="modal-code">cat ~/akari-project/ai-team/${folder}/prompt.md</div>
+  `;
+  document.getElementById('modal').classList.add('show');
+}
+
+// ===== SCHEDULE =====
+// タイプ別推奨スロット
+const TYPE_SLOTS = {
+  '共感':   ['21:00', '22:30'],
+  '教育':   ['07:00', '12:30'],
+  '参加型': ['12:30', '21:00'],
+  '興味づけ':['22:30', '21:00'],
+};
+const SLOT_LABELS = { '07:00':'朝の通勤前', '12:30':'昼休み', '21:00':'夜のリラックスタイム', '22:30':'就寝前' };
+
+// 今日から投稿本数に応じて均等割り当て（1日3本）
+function autoScheduleAll() {
+  const base = new Date();
+  base.setHours(0, 0, 0, 0); // 今日の0時
+  // タイプ別にグループ化して順に取り出すためのキュー
+  const typeOrder = ['共感','教育','参加型','興味づけ'];
+  const queues = {};
+  typeOrder.forEach(t => { queues[t] = posts.filter(p => p.type === t); });
+
+  const postsPerDay = 3;
+  const totalPosts = posts.length;
+  const totalDays = Math.max(1, Math.ceil(totalPosts / postsPerDay));
+  // 1日3本を目安に、タイプをバランスよく配置
+  // パターン: [共感,教育,興味づけ] [参加型,教育,共感] ... を繰り返し
+  const dayPattern = [
+    ['共感','教育','興味づけ'],
+    ['参加型','教育','共感'],
+    ['興味づけ','参加型','共感'],
+    ['教育','共感','参加型'],
+    ['興味づけ','教育','参加型'],
+    ['共感','参加型','興味づけ'],
+    ['教育','共感','興味づけ'],
+    ['参加型','教育','共感'],
+    ['興味づけ','参加型','教育'],
+    ['共感','興味づけ','参加型'],
+  ];
+  // スロット割り当てカウンタ（タイプごとに交互）
+  const slotIdx = { '共感':0, '教育':0, '参加型':0, '興味づけ':0 };
+
+  let scheduled = 0;
+  for (let day = 0; day < totalDays && scheduled < totalPosts; day++) {
+    const pattern = dayPattern[day % dayPattern.length];
+    // その日の各スロットに投稿を割り当て
+    for (let slot = 0; slot < postsPerDay && scheduled < totalPosts; slot++) {
+      let type = pattern[slot];
+      let queue = queues[type];
+      if (!queue.length) {
+        type = typeOrder.find(t => queues[t].length);
+        if (!type) break;
+        queue = queues[type];
+      }
+      const post = queue.shift();
+      const time = TYPE_SLOTS[type][slotIdx[type] % TYPE_SLOTS[type].length];
+      slotIdx[type]++;
+      const d = new Date(base);
+      d.setDate(base.getDate() + day);
+      const dateStr = d.toISOString().slice(0,10);
+      post.scheduledDate = dateStr;
+      post.scheduledHour = time;
+      post.scheduledTime = `${dateStr}T${time}`;
+      scheduled++;
+    }
+  }
+  renderPosts();
+  const endDate = new Date(base);
+  endDate.setDate(base.getDate() + totalDays - 1);
+  const fmt = d => `${d.getMonth()+1}/${d.getDate()}`;
+  showModal('🗓️ 自動スケジュール設定完了', `${scheduled}本の投稿を${fmt(base)}〜${fmt(endDate)}の${totalDays}日間に割り当てました。<br>投稿タイプ別の最適時間帯で配分しています。<br>個別に変更したい場合は各カードの日付・時間を直接編集してください。`);
+}
+
+function renderSchedBox(post) {
+  const hasSchedule = post.scheduledDate && post.scheduledHour;
+  const slotLabel = hasSchedule ? (SLOT_LABELS[post.scheduledHour] || '') : '';
+  const confirmed = post.status === 'approved' && hasSchedule;
+  const displayDate = hasSchedule ? formatDate(post.scheduledDate) : '';
+  return `
+  <div class="sched-box" id="sched-box-${post.id}">
+    <div class="sched-recommend">
+      <span class="sched-recommend-label">📅 投稿スケジュール</span>
+      ${hasSchedule ? `<span class="sched-slot-tag">${slotLabel}</span>` : '<span style="color:#94a3b8;font-size:11px;">未設定（自動設定ボタンで一括割り当て）</span>'}
+      ${confirmed ? '<span class="sched-confirmed">✓ スケジュール確定</span>' : ''}
+    </div>
+    <div class="sched-inputs">
+      <input type="date" class="sched-date" value="${post.scheduledDate || ''}"
+        onchange="updateSchedDate(${post.id}, this.value)">
+      <input type="time" class="sched-time" value="${post.scheduledHour || ''}"
+        onchange="updateSchedHour(${post.id}, this.value)" list="time-slots-${post.id}">
+      <datalist id="time-slots-${post.id}">
+        <option value="07:00">朝の通勤前</option>
+        <option value="12:30">昼休み</option>
+        <option value="21:00">夜のリラックスタイム</option>
+        <option value="22:30">就寝前</option>
+      </datalist>
+      ${hasSchedule ? `<span style="font-size:11px;color:#64748b;">${displayDate} ${post.scheduledHour}</span>` : ''}
+    </div>
+  </div>`;
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  return `${d.getMonth()+1}月${d.getDate()}日`;
+}
+
+function updateSchedDate(id, val) {
+  const post = posts.find(p => p.id === id);
+  post.scheduledDate = val;
+  post.scheduledTime = val && post.scheduledHour ? `${val}T${post.scheduledHour}` : '';
+  refreshSchedBox(post);
+}
+
+function updateSchedHour(id, val) {
+  const post = posts.find(p => p.id === id);
+  post.scheduledHour = val;
+  post.scheduledTime = post.scheduledDate && val ? `${post.scheduledDate}T${val}` : '';
+  refreshSchedBox(post);
+}
+
+function refreshSchedBox(post) {
+  const box = document.getElementById('sched-box-' + post.id);
+  if (box) box.outerHTML = renderSchedBox(post);
+  // outerHTML置換後にIDが変わるので再取得不要
+  const newBox = document.getElementById('sched-box-' + post.id);
+}
+
+function showModal(title, body) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = body;
+  document.getElementById('modal-confirm').onclick = closeModal;
+  document.getElementById('modal').classList.add('show');
+}
+
+// ===== POSTS =====
+function buildPosts() {
+  updatePostCounts();
+  renderPosts();
+}
+
+function renderPosts() {
+  const container = document.getElementById('posts-container');
+  let filtered = posts;
+  if (currentFilter === 'pending' || currentFilter === 'approved' || currentFilter === 'rejected') {
+    filtered = posts.filter(p => p.status === currentFilter);
+  } else if (currentFilter !== 'all') {
+    filtered = posts.filter(p => p.type === currentFilter);
+  }
+
+  container.innerHTML = filtered.map(post => {
+    const charCount = post.content.length;
+    return `
+    <div class="post-card ${post.status}" id="post-card-${post.id}">
+      <div class="post-top">
+        <div class="post-meta">
+          <span class="post-num">#${post.id}</span>
+          <span class="type-badge type-${post.type}">${post.type}</span>
+          <span class="status-badge status-${post.status}" id="status-badge-${post.id}">
+            ${post.status === 'pending' ? '未確認' : post.status === 'approved' ? '承認済み' : '却下'}
+          </span>
+          ${post.edited ? '<span class="edited-badge">編集済み</span>' : ''}
+        </div>
+        <span class="post-char-count" id="char-count-${post.id}">${charCount}文字</span>
+      </div>
+
+      <!-- 表示モード -->
+      <div id="view-mode-${post.id}">
+        <div class="post-body" id="post-body-${post.id}">${escHtml(post.content)}</div>
+        <div class="post-expand" onclick="toggleExpand(${post.id})">▾ 全文を見る</div>
+        <div class="post-actions">
+          <button class="btn btn-success btn-sm" onclick="setStatus(${post.id}, 'approved')">✓ 承認</button>
+          <button class="btn btn-danger btn-sm" onclick="setStatus(${post.id}, 'rejected')">✕ 却下</button>
+          <button class="btn btn-ghost btn-sm" onclick="setStatus(${post.id}, 'pending')">↺ 保留</button>
+          <button class="btn btn-sm" style="background:#f1f5f9;color:#374151;" onclick="startEdit(${post.id})">✏️ 編集</button>
+        </div>
+        ${renderSchedBox(post)}
+      </div>
+
+      <!-- 編集モード -->
+      <div id="edit-mode-${post.id}" style="display:none;">
+        <textarea class="post-textarea" id="post-textarea-${post.id}"
+          oninput="onEditInput(${post.id})">${escHtml(post.content)}</textarea>
+        <div class="edit-footer">
+          <span class="edit-char" id="edit-char-${post.id}">${charCount}文字</span>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-ghost btn-sm" onclick="cancelEdit(${post.id})">✕ キャンセル</button>
+            <button class="btn btn-primary btn-sm" onclick="saveEdit(${post.id})">✓ 保存</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function toggleExpand(id) {
+  const body = document.getElementById('post-body-' + id);
+  body.classList.toggle('expanded');
+}
+
+function startEdit(id) {
+  document.getElementById('view-mode-' + id).style.display = 'none';
+  document.getElementById('edit-mode-' + id).style.display = 'block';
+  const ta = document.getElementById('post-textarea-' + id);
+  ta.focus();
+  ta.setSelectionRange(ta.value.length, ta.value.length);
+}
+
+function cancelEdit(id) {
+  const post = posts.find(p => p.id === id);
+  const ta = document.getElementById('post-textarea-' + id);
+  ta.value = post.content;
+  document.getElementById('edit-char-' + id).textContent = post.content.length + '文字';
+  document.getElementById('edit-char-' + id).className = 'edit-char';
+  document.getElementById('edit-mode-' + id).style.display = 'none';
+  document.getElementById('view-mode-' + id).style.display = 'block';
+}
+
+function saveEdit(id) {
+  const post = posts.find(p => p.id === id);
+  const ta = document.getElementById('post-textarea-' + id);
+  const newContent = ta.value;
+  const wasEdited = newContent !== post.content;
+  post.content = newContent;
+  if (wasEdited) post.edited = true;
+  document.getElementById('post-body-' + id).textContent = newContent;
+  document.getElementById('char-count-' + id).textContent = newContent.length + '文字';
+  document.getElementById('edit-mode-' + id).style.display = 'none';
+  document.getElementById('view-mode-' + id).style.display = 'block';
+  // 編集済みバッジを即時反映
+  const meta = document.querySelector(`#post-card-${id} .post-meta`);
+  if (wasEdited && !meta.querySelector('.edited-badge')) {
+    const badge = document.createElement('span');
+    badge.className = 'edited-badge';
+    badge.textContent = '編集済み';
+    meta.appendChild(badge);
+  }
+}
+
+function onEditInput(id) {
+  const ta = document.getElementById('post-textarea-' + id);
+  const len = ta.value.length;
+  const el = document.getElementById('edit-char-' + id);
+  el.textContent = len + '文字';
+  el.className = 'edit-char' + (len > 400 ? ' over' : '');
+  document.getElementById('char-count-' + id).textContent = len + '文字';
+}
+
+function setStatus(id, status) {
+  const post = posts.find(p => p.id === id);
+  post.status = status;
+  const card = document.getElementById('post-card-' + id);
+  card.className = 'post-card ' + status;
+  const badge = document.getElementById('status-badge-' + id);
+  badge.className = 'status-badge status-' + status;
+  badge.textContent = status === 'pending' ? '未確認' : status === 'approved' ? '承認済み' : '却下';
+  // スケジュール確定バッジを即時更新
+  const box = document.getElementById('sched-box-' + id);
+  if (box) box.outerHTML = renderSchedBox(post);
+  updatePostCounts();
+}
+
+function filterPosts(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPosts();
+}
+
+function approveAll() {
+  posts.forEach(p => { if (p.status === 'pending') p.status = 'approved'; });
+  renderPosts();
+  updatePostCounts();
+}
+
+function resetAll() {
+  posts.forEach(p => p.status = 'pending');
+  renderPosts();
+  updatePostCounts();
+}
+
+function updatePostCounts() {
+  const total = posts.length;
+  const pending = posts.filter(p => p.status === 'pending').length;
+  const approved = posts.filter(p => p.status === 'approved').length;
+  const rejected = posts.filter(p => p.status === 'rejected').length;
+  const typeCounts = posts.reduce((counts, post) => {
+    counts[post.type] = (counts[post.type] || 0) + 1;
+    return counts;
+  }, {});
+  document.getElementById('count-pending').textContent = pending;
+  document.getElementById('count-approved').textContent = approved;
+  document.getElementById('count-rejected').textContent = rejected;
+  document.getElementById('pending-badge').textContent = pending;
+  document.getElementById('dash-approved').textContent = approved;
+  document.getElementById('dash-total-posts').textContent = total;
+  document.getElementById('posts-subtitle').textContent = `Threads投稿${total}本の確認・承認・スケジュール設定`;
+  document.querySelector('[data-filter="all"]').textContent = `すべて (${total})`;
+  ['共感', '教育', '参加型', '興味づけ'].forEach(type => {
+    const btn = document.querySelector(`[data-filter="${type}"]`);
+    if (btn) btn.textContent = `${type} (${typeCounts[type] || 0})`;
+  });
+  if (pending === 0) document.getElementById('pending-badge').style.display = 'none';
+  else document.getElementById('pending-badge').style.display = 'inline';
+}
+
+// ===== FUNNEL =====
+function buildFunnel() {
+  const stages = document.getElementById('funnel-stages');
+  stages.innerHTML = products.map((p, i) => `
+    <div class="funnel-stage">
+      <div class="funnel-bar" style="background:${p.color};" onclick="showFunnelDetail('${p.id}')">
+        <div>
+          <div class="funnel-product-name">${p.name}</div>
+          <div class="funnel-product-cta">「${p.cta}」</div>
+        </div>
+        <div class="funnel-price-box">
+          <div class="funnel-price-main">¥${p.price.toLocaleString()}</div>
+          <div class="funnel-price-sub">${p.limit || '常時販売'}</div>
+        </div>
+      </div>
+    </div>
+    ${i < products.length - 1 ? '<div class="funnel-connector">↓</div>' : ''}
+  `).join('');
+}
+
+function showFunnelDetail(id) {
+  const p = products.find(p => p.id === id);
+  document.getElementById('funnel-detail-empty').style.display = 'none';
+  const content = document.getElementById('funnel-detail-content');
+  content.style.display = 'block';
+  content.innerHTML = `
+    <div style="font-size:14px;font-weight:bold;color:#1e293b;margin-bottom:6px;">${p.name}</div>
+    <div style="font-size:12px;color:#7c3aed;margin-bottom:12px;">¥${p.price.toLocaleString()} ${p.limit ? '— '+p.limit : ''}</div>
+    <div style="font-size:12px;color:#64748b;margin-bottom:12px;line-height:1.7;">${p.axis}</div>
+    ${p.detail.map(d => `<div class="funnel-detail-row"><span>${d[0]}</span><span>${d[1]}</span></div>`).join('')}
+    <div style="margin-top:14px;padding:10px;background:#f3e8ff;border-radius:8px;">
+      <div style="font-size:11px;color:#7c3aed;font-weight:bold;margin-bottom:4px;">CTA</div>
+      <div style="font-size:13px;color:#374151;">「${p.cta}」</div>
+    </div>
+  `;
+}
+
+// ===== MODAL =====
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+  document.getElementById('modal-confirm').textContent = 'OK';
+}
+
+// ===== CREDENTIALS (localStorage) =====
+let credentialsStore = JSON.parse(localStorage.getItem('akari_credentials') || '{}');
+
+const CRED_SERVICES = [
+  { key: 'google',  label: 'Google',  icon: 'G', color: '#4285f4', bg: '#e8f0fe', border: '#a8c4f8' },
+  { key: 'threads', label: 'Threads', icon: '⊕', color: '#1a1a1a', bg: '#f1f5f9', border: '#cbd5e1' },
+  { key: 'x',       label: 'X',       icon: '✕', color: '#1d9bf0', bg: '#e7f3fc', border: '#93c5fd' },
+];
+
+function saveAllCredentials(id) {
+  const entry = {};
+  CRED_SERVICES.forEach(s => {
+    const u = (document.getElementById('cred-' + s.key + '-username') || {}).value || '';
+    const p = (document.getElementById('cred-' + s.key + '-password') || {}).value || '';
+    const ph = (document.getElementById('cred-' + s.key + '-phone') || {}).value || '';
+    const be = s.key === 'google' ? ((document.getElementById('cred-google-backup-email') || {}).value || '') : '';
+    entry[s.key] = { username: u.trim(), password: p, phone: ph.trim(), ...(s.key === 'google' ? { backupEmail: be.trim() } : {}) };
+  });
+  credentialsStore[id] = entry;
+  localStorage.setItem('akari_credentials', JSON.stringify(credentialsStore));
+}
+
+function getCredentials(id) {
+  return credentialsStore[id] || null;
+}
+
+function getCredBadgeHtml(id) {
+  const cred = getCredentials(id);
+  if (!cred) return '';
+  return CRED_SERVICES
+    .filter(s => cred[s.key] && (cred[s.key].username || cred[s.key].password || cred[s.key].phone))
+    .map(s => `<span class="acc-cred-badge" style="background:${s.bg};color:${s.color};border:1px solid ${s.border};">${s.label}</span>`)
+    .join('');
+}
+
+function editAccCredentials(id) {
+  const acc = accounts.find(a => a.id === id);
+  const cred = getCredentials(id) || {};
+  document.getElementById('modal-title').textContent = acc.name + ' — ID / パスワード管理';
+  document.getElementById('modal-body').innerHTML =
+    '<div style="display:flex;flex-direction:column;gap:14px;">' +
+    CRED_SERVICES.map(function(s) {
+      const sc = cred[s.key] || {};
+      const saved = sc.username || sc.password || sc.phone;
+      return '<div style="border:1px solid ' + (saved ? s.border : '#e2e8f0') + ';border-radius:10px;padding:14px;background:' + (saved ? s.bg : '#fafafa') + ';">' +
+        '<div style="font-size:13px;font-weight:bold;color:#1e293b;margin-bottom:10px;display:flex;align-items:center;gap:6px;">' +
+        '<span style="width:20px;height:20px;border-radius:50%;background:' + s.color + ';color:white;font-size:10px;font-weight:bold;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">' + s.icon + '</span>' +
+        s.label +
+        (saved ? ' <span style="font-size:10px;color:' + s.color + ';background:white;border:1px solid ' + s.border + ';padding:1px 6px;border-radius:8px;font-weight:normal;">保存済</span>' : '') +
+        '</div>' +
+        '<div style="display:flex;flex-direction:column;gap:8px;">' +
+        '<label style="font-size:12px;color:#64748b;">ID・メールアドレス' +
+        '<input type="text" id="cred-' + s.key + '-username" value="' + (sc.username ? escapeHtml(sc.username) : '') + '" placeholder="' + s.label + ' のID / メールアドレス">' +
+        '</label>' +
+        '<label style="font-size:12px;color:#64748b;">パスワード' +
+        '<div class="cred-input-wrap">' +
+        '<input type="password" id="cred-' + s.key + '-password" value="' + (sc.password ? escapeHtml(sc.password) : '') + '" placeholder="パスワードを入力">' +
+        '<button class="cred-toggle" type="button" onclick="toggleCredPassword(\'cred-' + s.key + '-password\',this)" title="表示/非表示">👁</button>' +
+        '</div>' +
+        '</label>' +
+        '<label style="font-size:12px;color:#64748b;">電話番号' +
+        '<input type="tel" id="cred-' + s.key + '-phone" value="' + (sc.phone ? escapeHtml(sc.phone) : '') + '" placeholder="登録している電話番号">' +
+        '</label>' +
+        (s.key === 'google' ?
+          '<label style="font-size:12px;color:#64748b;">予備のメールアドレス' +
+          '<input type="email" id="cred-google-backup-email" value="' + (sc.backupEmail ? escapeHtml(sc.backupEmail) : '') + '" placeholder="予備のメールアドレス">' +
+          '</label>'
+        : '') +
+        '</div>' +
+        '</div>';
+    }).join('') +
+    '</div>';
+  document.getElementById('modal-confirm').textContent = '保存';
+  document.getElementById('modal-confirm').onclick = function() {
+    saveAllCredentials(id);
+    renderAccounts();
+    closeModal();
+  };
+  document.getElementById('modal').classList.add('show');
+}
+
+function toggleCredPassword(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁';
+  }
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// ===== ACCOUNTS =====
+const accounts = [
+  { id:1,  name:'月詠あかり',   genre:'夢占い×星座',     status:'active',  followers:0, posts:0, line:0 },
+  { id:2,  name:'金運ひかり',   genre:'金運×数秘術',     status:'setting', followers:0, posts:0, line:0 },
+  { id:3,  name:'タロットれん', genre:'タロット×恋愛',   status:'setting', followers:0, posts:0, line:0 },
+  { id:4,  name:'紫苑みこと',   genre:'霊感×前世',       status:'setting', followers:0, posts:0, line:0 },
+  { id:5,  name:'琥珀ことね',   genre:'オーラ×波動',     status:'setting', followers:0, posts:0, line:0 },
+  { id:6,  name:'朱鳥さくら',   genre:'風水×開運',       status:'setting', followers:0, posts:0, line:0 },
+  { id:7,  name:'蒼月いつき',   genre:'数秘術×使命',     status:'setting', followers:0, posts:0, line:0 },
+  { id:8,  name:'藤花のぞみ',   genre:'チャネリング×守護', status:'setting', followers:0, posts:0, line:0 },
+  { id:9,  name:'翠嵐かなで',   genre:'ルーン×北欧神話', status:'setting', followers:0, posts:0, line:0 },
+  { id:10, name:'白銀つばさ',   genre:'エンジェル×天使', status:'setting', followers:0, posts:0, line:0 },
+  { id:11, name:'緋色ましろ',   genre:'カラー×色彩診断', status:'setting', followers:0, posts:0, line:0 },
+  { id:12, name:'夕凪ちひろ',   genre:'手相×運命線',     status:'setting', followers:0, posts:0, line:0 },
+  { id:13, name:'天音るな',     genre:'音占い×周波数',   status:'setting', followers:0, posts:0, line:0 },
+  { id:14, name:'花橘ゆず',     genre:'薬草×自然療法',   status:'setting', followers:0, posts:0, line:0 },
+  { id:15, name:'星詠みかほ',   genre:'星座×バースチャート', status:'setting', followers:0, posts:0, line:0 },
+  { id:16, name:'深碧なぎさ',   genre:'マヤ暦×kin',     status:'setting', followers:0, posts:0, line:0 },
+  { id:17, name:'銀河ひより',   genre:'水晶×クリスタル', status:'setting', followers:0, posts:0, line:0 },
+  { id:18, name:'椿乃あおい',   genre:'九星気学×方位',   status:'setting', followers:0, posts:0, line:0 },
+  { id:19, name:'紅葉ことは',   genre:'易占×六十四卦',   status:'setting', followers:0, posts:0, line:0 },
+  { id:20, name:'清流みなも',   genre:'瞑想×マインドフルネス', status:'setting', followers:0, posts:0, line:0 },
+];
+// 追加済みのカスタムアカウントをlocalStorageから復元
+(function() {
+  const custom = JSON.parse(localStorage.getItem('akari_custom_accounts') || '[]');
+  custom.forEach(function(a) { accounts.push(a); });
+})();
+const LINE_GOAL = 250;
+let accFilter = 'all';
+let hideInactive = localStorage.getItem('akari_hide_inactive') === 'true';
+
+function buildAccounts() {
+  const genres = [...new Set(accounts.map(a => a.genre))];
+  const total   = accounts.length;
+  const active  = accounts.filter(a => a.status === 'active').length;
+  const setting = accounts.filter(a => a.status === 'setting').length;
+  document.getElementById('acc-filters').innerHTML = `
+    <button class="filter-btn active" onclick="filterAccounts('all',this)">すべて (${total})</button>
+    <button class="filter-btn" onclick="filterAccounts('active',this)">稼働中 (${active})</button>
+    <button class="filter-btn" onclick="filterAccounts('setting',this)">設定中 (${setting})</button>
+    <span style="width:1px;height:20px;background:#e2e8f0;display:inline-block;margin:0 4px;"></span>
+    ${genres.slice(0,6).map(g => `<button class="filter-btn" onclick="filterAccounts('${g}',this)">${g}</button>`).join('')}
+    <button id="btn-hide-inactive" onclick="toggleHideInactive()"
+      style="margin-left:auto;padding:4px 12px;border-radius:20px;border:1px solid ${hideInactive ? '#10b981' : '#e2e8f0'};background:${hideInactive ? '#d1fae5' : 'white'};color:${hideInactive ? '#065f46' : '#64748b'};font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;">
+      ${hideInactive ? '● 稼働中のみ表示中' : '○ 稼働中のみ表示'}
+    </button>
+  `;
+  renderAccounts();
+}
+
+function filterAccounts(filter, btn) {
+  accFilter = filter;
+  document.querySelectorAll('#acc-filters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAccounts();
+}
+
+function toggleHideInactive() {
+  hideInactive = !hideInactive;
+  localStorage.setItem('akari_hide_inactive', hideInactive);
+  buildAccounts();
+}
+
+function renderAccounts() {
+  let filtered = accounts;
+  if (accFilter === 'active') filtered = accounts.filter(a => a.status === 'active');
+  else if (accFilter === 'setting') filtered = accounts.filter(a => a.status === 'setting');
+  else if (accFilter === 'stopped') filtered = accounts.filter(a => a.status === 'stopped');
+  else if (accFilter !== 'all') filtered = accounts.filter(a => a.genre === accFilter);
+  if (hideInactive) filtered = filtered.filter(a => a.status === 'active');
+
+  const statusLabel = { active:'稼働中', setting:'設定中', stopped:'停止' };
+  const statusColor = { active:'#10b981', setting:'#f59e0b', stopped:'#ef4444' };
+
+  const html = `<div class="accounts-grid">` + filtered.map(acc => {
+    const pct = Math.min(100, Math.round(acc.line / LINE_GOAL * 100));
+    return `
+    <div class="acc-card ${acc.status}" id="acc-card-${acc.id}">
+      <div class="acc-top">
+        <div>
+          <div class="acc-name">${acc.name}${getCredBadgeHtml(acc.id)}</div>
+          <span class="acc-genre-tag">${acc.genre}</span>
+        </div>
+        <div class="acc-status-dot">
+          <span class="dot dot-${acc.status}"></span>
+          <span style="color:${statusColor[acc.status]}">${statusLabel[acc.status]}</span>
+        </div>
+      </div>
+      <div class="acc-stats">
+        <div class="acc-stat">
+          <div class="acc-stat-num" id="acc-followers-${acc.id}">${acc.followers.toLocaleString()}</div>
+          <div class="acc-stat-label">フォロワー</div>
+        </div>
+        <div class="acc-stat">
+          <div class="acc-stat-num" id="acc-posts-${acc.id}">${acc.posts}</div>
+          <div class="acc-stat-label">投稿数</div>
+        </div>
+        <div class="acc-stat">
+          <div class="acc-stat-num" id="acc-line-${acc.id}">${acc.line}</div>
+          <div class="acc-stat-label">LINE登録</div>
+        </div>
+      </div>
+      <div class="acc-progress-wrap">
+        <div class="acc-progress-header">
+          <span>LINE目標 ${LINE_GOAL}人</span>
+          <span id="acc-pct-${acc.id}">${pct}%</span>
+        </div>
+        <div class="acc-progress-track">
+          <div class="acc-progress-fill ${acc.status}" id="acc-bar-${acc.id}" style="width:${pct}%"></div>
+        </div>
+      </div>
+      <div class="acc-actions">
+        <select class="acc-select" onchange="changeAccStatus(${acc.id}, this.value)">
+          <option value="active" ${acc.status==='active'?'selected':''}>稼働中</option>
+          <option value="setting" ${acc.status==='setting'?'selected':''}>設定中</option>
+          <option value="stopped" ${acc.status==='stopped'?'selected':''}>停止</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="editAccLine(${acc.id})">LINE編集</button>
+        <button class="btn btn-ghost btn-sm" onclick="editAccCredentials(${acc.id})">ID管理</button>
+      </div>
+    </div>`;
+  }).join('') + `</div>`;
+  document.getElementById('accounts-grid').innerHTML = html;
+  updateAccStats();
+}
+
+function changeAccStatus(id, status) {
+  const acc = accounts.find(a => a.id === id);
+  acc.status = status;
+  renderAccounts();
+}
+
+function editAccLine(id) {
+  const acc = accounts.find(a => a.id === id);
+  document.getElementById('modal-title').textContent = `${acc.name} — 数値を更新`;
+  document.getElementById('modal-body').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <label style="font-size:13px;color:#374151;">フォロワー数
+        <input type="number" id="edit-followers" value="${acc.followers}" min="0"
+          style="display:block;width:100%;margin-top:4px;border:1px solid #e2e8f0;border-radius:6px;padding:7px 10px;font-size:13px;">
+      </label>
+      <label style="font-size:13px;color:#374151;">投稿数
+        <input type="number" id="edit-posts" value="${acc.posts}" min="0"
+          style="display:block;width:100%;margin-top:4px;border:1px solid #e2e8f0;border-radius:6px;padding:7px 10px;font-size:13px;">
+      </label>
+      <label style="font-size:13px;color:#374151;">LINE登録数
+        <input type="number" id="edit-line" value="${acc.line}" min="0"
+          style="display:block;width:100%;margin-top:4px;border:1px solid #e2e8f0;border-radius:6px;padding:7px 10px;font-size:13px;">
+      </label>
+    </div>
+  `;
+  document.getElementById('modal-confirm').onclick = () => {
+    acc.followers = parseInt(document.getElementById('edit-followers').value) || 0;
+    acc.posts = parseInt(document.getElementById('edit-posts').value) || 0;
+    acc.line = parseInt(document.getElementById('edit-line').value) || 0;
+    renderAccounts();
+    closeModal();
+  };
+  document.getElementById('modal').classList.add('show');
+}
+
+function updateAccStats() {
+  const active = accounts.filter(a => a.status === 'active').length;
+  const setting = accounts.filter(a => a.status === 'setting').length;
+  const totalLine = accounts.reduce((s, a) => s + a.line, 0);
+  document.getElementById('acc-stat-active').textContent = active;
+  document.getElementById('acc-stat-setting').textContent = setting;
+  document.getElementById('acc-stat-line').textContent = totalLine.toLocaleString();
+  const n = accounts.length;
+  const sub = document.getElementById('acc-stat-total-sub');
+  if (sub) sub.textContent = '/ ' + n + 'アカウント';
+  const subtitle = document.getElementById('acc-page-subtitle');
+  if (subtitle) subtitle.textContent = n + 'アカウントの稼働状況・フォロワー・LINE登録数を管理';
+}
+
+function openAddAccountModal() {
+  document.getElementById('modal-title').textContent = '新しいアカウントを追加';
+  document.getElementById('modal-body').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <label style="font-size:13px;color:#374151;font-weight:500;">
+        アカウント名 <span style="color:#ef4444;">*</span>
+        <input type="text" id="new-acc-name" placeholder="例: 桜花みらい"
+          style="display:block;width:100%;margin-top:4px;border:1px solid #e2e8f0;border-radius:6px;padding:7px 10px;font-size:13px;box-sizing:border-box;">
+      </label>
+      <label style="font-size:13px;color:#374151;font-weight:500;">
+        ジャンル <span style="color:#ef4444;">*</span>
+        <input type="text" id="new-acc-genre" placeholder="例: 夢占い×星座"
+          style="display:block;width:100%;margin-top:4px;border:1px solid #e2e8f0;border-radius:6px;padding:7px 10px;font-size:13px;box-sizing:border-box;">
+      </label>
+      <label style="font-size:13px;color:#374151;font-weight:500;">
+        ステータス
+        <select id="new-acc-status"
+          style="display:block;width:100%;margin-top:4px;border:1px solid #e2e8f0;border-radius:6px;padding:7px 10px;font-size:13px;background:white;cursor:pointer;">
+          <option value="setting">設定中</option>
+          <option value="active">稼働中</option>
+          <option value="stopped">停止</option>
+        </select>
+      </label>
+      <div id="new-acc-error" style="display:none;font-size:12px;color:#ef4444;background:#fef2f2;padding:7px 10px;border-radius:6px;"></div>
+    </div>
+  `;
+  document.getElementById('modal-confirm').textContent = '追加';
+  document.getElementById('modal-confirm').onclick = function() {
+    const name   = document.getElementById('new-acc-name').value.trim();
+    const genre  = document.getElementById('new-acc-genre').value.trim();
+    const status = document.getElementById('new-acc-status').value;
+    const errEl  = document.getElementById('new-acc-error');
+    if (!name || !genre) {
+      errEl.textContent = 'アカウント名とジャンルは必須です';
+      errEl.style.display = 'block';
+      return;
+    }
+    addNewAccount(name, genre, status);
+    closeModal();
+  };
+  document.getElementById('modal').classList.add('show');
+}
+
+function addNewAccount(name, genre, status) {
+  const maxId = accounts.reduce(function(m, a) { return Math.max(m, a.id); }, 0);
+  accounts.push({ id: maxId + 1, name: name, genre: genre, status: status, followers: 0, posts: 0, line: 0 });
+  const custom = accounts.filter(function(a) { return a.id > 20; });
+  localStorage.setItem('akari_custom_accounts', JSON.stringify(custom));
+  buildAccounts();
+}
+
+// ===== RESEARCH POSTS =====
+const researchPosts = [
+  { no:1, type:'共感×深夜型', text:`深夜にひとりで\n「なぜ私だけ、うまくいかないんだろう」\nと考えたことがある人へ。\n\nそれ、あなたの能力のせいじゃないです。\n\n頑張っているのに動かないのは、\n魂の深部に刻まれた「見えないパターン」が邪魔をしているから。\n\nそのパターンは毎晩、夢という形であなたに語りかけています。\n\n今夜見た夢、覚えていますか？🌙` },
+  { no:2, type:'秘密暴露型', text:`実は夢には、星の設計図との「暗号の対応表」がある。\n\n🔮 水が出てくる夢 → 感情の流れが詰まっているサイン\n🔮 空を飛ぶ夢 → 魂が本来の軌道を思い出している\n🔮 知らない家をさまよう夢 → 新しい自分への扉が開きかけている\n\nほとんどの人が「変な夢を見た」で終わらせているけど、\n夢は魂が送る暗号。\n\n保存しておいてください🌙` },
+  { no:3, type:'診断型', text:`最近よく見る夢、どれに近いですか？\n\nA）追いかけられる夢\nB）遅刻・間に合わない夢\nC）高いところから落ちる夢\nD）知らない場所をさまよう夢\n\n✨ この4タイプ、魂が送っているSOSのカテゴリが全部違います。\n\nコメント欄でそれぞれの意味をお伝えします。\nあなたはどれでしたか？🌙` },
+  { no:4, type:'予言・運勢型', text:`今月、お金とキャリアが静かに動き始める人の3つのサイン。\n\n① 夜中に目が覚めることが増えた\n② 最近、昔の夢・昔の自分を夢で見る\n③ 「このままでいいのか」という感覚が強くなっている\n\n✨ これ、悪いサインじゃない。\n魂が「次の扉を開く準備を始めた」という宇宙からの通知です。\n\n当てはまった人は「🌙」をコメントしてください。` },
+  { no:5, type:'ビフォーアフター型', text:`2年間、見えない壁を感じていた私が夢日記を始めて変わったこと。\n\n【Before】\n・努力しているのにお金が動かない\n・キャリアで何度も見えない壁にぶつかる\n・深夜に「なぜ私だけ」と泣いていた\n\n【After】\n・魂の詰まりの正体がわかった\n・星の流れに乗ったら抵抗がなくなった\n・夢が毎晩、道を照らしてくれるようになった\n\nあなたも同じ壁を感じていませんか？🌙` },
+  { no:6, type:'共感型', text:`「頑張っているのになんで変わらないんだろう」\n\nこの問いを、何年も抱えている人がいる。\n\nその答えは、努力の方向ではなくて魂の設計図の中にあります。\n\n星はあなたの魂の設計図。\n夢は、その設計図を読む鍵。\n\nこの2つを合わせて初めて、「なぜ動かないのか」の正体が見える。\n\n霧が晴れるような感覚、あなたにも届けたいと思っています🌙` },
+  { no:7, type:'秘密暴露×キャリア型', text:`キャリアで見えない壁を感じる人に、占星術師として言いたいこと。\n\nそれ、スキルの問題じゃないです。\n\n見えない壁の正体は、生まれたときから星に刻まれた「魂のパターン」であることが多い。\n\nそのパターンは毎晩、夢という形で警告や導きを送ってくる。\n\n「また壁にぶつかった」と思ったとき、前夜の夢を思い出してみて。\n\n必ずヒントが隠されているから🔮` },
+  { no:8, type:'予言型×満月活用', text:`今夜は満月🌕\n\n満月の夜に夢を見た人へ、特別なメッセージがあります。\n\n満月は「魂の棚卸し」の夜。この夜に見た夢は、星の設計図と最もリンクしやすいタイミング。\n\n今夜の夢、目が覚めたらすぐにメモして。\n\n✨ その夢には必ず、今のあなたへの暗号が込められています。\n\n夢日記の書き方、プロフLINEで無料配布中🌙` },
+  { no:9, type:'共感×お金型', text:`お金がなかなか動かない人に、よく共通していること。\n\n「もっと働かなきゃ」と思って表面だけを変えようとしている。\n\nでも本当の詰まりは、もっと深いところにある。\n\n魂の深部に刻まれた「お金への恐れのパターン」——\n\nこれは意識では気づけない。夢の中に、そのパターンが出てきます。\n\n「お金の夢」「数字の夢」「財布の夢」見たことがある人、実は多い。\n\nそれ、魂が送るSOSサインです🔮` },
+  { no:10, type:'診断型×星座', text:`あなたの星座を教えてください🌙\n\n星座ごとに「魂の詰まりが出やすいパターン」が全然違います。\n\n例えば——\n🌟 蠍座：過去の傷が夢に繰り返し現れる\n🌟 山羊座：「足りない」感覚の夢が多い\n🌟 天秤座：選択できない場面の夢を見やすい\n\nあなたの星座、コメントで教えてください。\nその星座特有の夢の暗号と詰まりの解き方、お伝えします✨` },
+  { no:11, type:'問いかけ型', text:`もし今夜、魂がひとつだけあなたに言葉を届けられるとしたら、\n\n何を言うと思いますか？\n\n「もっと休んで」\n「その道で合っている」\n「恐れなくていい」\n「手放してもいい」\n\n——不思議なことに、これと同じメッセージが夢の中に繰り返し現れている人がいます。\n\nあなたの夢は、どんな言葉を繰り返していますか？🌙` },
+  { no:12, type:'教育型', text:`夢日記の始め方【3ステップ】\n\n夢日記は「起きてすぐ30秒」が命。\n\nSTEP1️⃣ 枕元にノートとペンを置く\nSTEP2️⃣ 目が覚めたらすぐ書く（感情・色・出てきたものだけでいい）\nSTEP3️⃣ 毎朝1行だけ星の流れと照らし合わせる\n\n60日続けると、人生の詰まりの正体が霧が晴れるように見えてきます。\n\n保存しておいてください🌙` },
+  { no:13, type:'共感×深夜型上級', text:`午前2時、眠れないでいるあなたへ。\n\n「このままでいいのか」\n「なぜうまくいかないのか」\n「私には何かが足りないのか」\n\nこの問いは、弱さじゃない。\n\n魂が、本来の設計図に戻ろうとしているサインです。\n\n眠れない夜は、魂が最も声を出す夜。\n\n今感じている感覚を、紙に書いてみて。\nそれが明日の夢へのタネになるから🌙` },
+  { no:14, type:'信頼構築型', text:`月詠あかりが「夢×星座」を読む理由。\n\n夢日記を5年間、毎日書き続けた。\nホロスコープを1000枚以上読んできた。\n\nわかったのは——\n\n夢と星は、同じ魂の設計図を違う言語で表現しているということ。\n\n夢は「今夜の魂の声」\n星は「生まれながらの魂の設計図」\n\nこの2つを合わせて初めて、「見えない壁」の正体が言葉になる。\n\nこれは占いじゃない。魂の羅針盤を取り戻す作業です🔮` },
+  { no:15, type:'秘密暴露×保存促進', text:`知っておいてほしい「夢のサイン」7つ\n\n🌙 歯が抜ける夢 → 言いたいことを抑えているサイン\n🌙 水が溢れる夢 → 感情が満杯で流れを求めている\n🌙 追いかけられる夢 → 向き合えていない何かがある\n🌙 空を飛ぶ夢 → 魂が本来の高さを思い出している\n🌙 試験・遅刻の夢 → 評価への恐れが魂に詰まっている\n🌙 知らない家の夢 → 新しい自分への扉が近い\n🌙 死ぬ夢 → 変容・再生のサイン（怖くない）\n\n全部、魂が送る暗号です。保存して見返してください🌙` },
+  { no:16, type:'教育×お金型', text:`お金の流れをブロックしている魂のパターン、3タイプ。\n\n①「足りない」の夢を繰り返し見る人\n→ 星の設計図に「欠乏の刷り込み」がある可能性\n\n②夢に「数字」や「お金」が出てくる人\n→ お金への恐れと期待が同時に詰まっているサイン\n\n③夢に「走っても間に合わない」場面が出る人\n→ 焦りのパターンが流れを止めている\n\nコメントで「①」「②」「③」を教えてください。\n解決の糸口、お伝えします🔮` },
+  { no:17, type:'刷り込み×世界観型', text:`夢は魂が送る暗号。\n星はその魂の設計図。\n\nこの2つを持っている人は、実はもう「答え」を全部持っている。\n\n迷子になっているんじゃなくて、暗号の読み方を知らなかっただけ。\n\n翻訳できた瞬間、霧が晴れる。\n\n流れに乗れる。\n\nお金もキャリアも、「抵抗なく動き始める」というその感覚——\n\n本当にあります🌙` },
+  { no:18, type:'LINE誘導特化型', text:`今、月詠あかりのLINEでは\n「夢日記スターターキット」を無料配布中です。✨\n\n・夢の記録フォーマット\n・夢のサイン一覧（保存版）\n・あなたの星座別 詰まりパターン診断\n\nこの3つを受け取った人から、\n「魂の声が聞こえるようになった」という報告が届いています。\n\nプロフィールのLINEリンクから受け取れます。🌙` },
+];
+
+function buildResearchKeywords() {
+  const groups = [
+    { id: 'kw-empathy', words: ['なぜ私だけ','見えない壁','報われない','深夜にひとりで','誰にも言えない','疲れた'], bg: '#fde8f5', color: '#9d174d' },
+    { id: 'kw-hope',    words: ['霧が晴れる','流れが変わる','扉が開く','星の流れに乗る','詰まりが取れる'], bg: '#d1fae5', color: '#065f46' },
+    { id: 'kw-brand',   words: ['夢は魂が送る暗号','星の設計図に還る','見えない流れの扉を開く','夢×星座の羅針盤','魂の詰まりを解く'], bg: '#ede9fe', color: '#5b21b6', bold: true },
+  ];
+  groups.forEach(g => {
+    const el = document.getElementById(g.id);
+    if (!el) return;
+    el.innerHTML = g.words.map(k =>
+      `<span style="background:${g.bg};color:${g.color};padding:4px ${g.bold ? '14px' : '12px'};border-radius:20px;font-size:12px;${g.bold ? 'font-weight:bold;' : ''}">${k}</span>`
+    ).join('');
+  });
+}
+
+function buildResearchPosts() {
+  const grid = document.getElementById('research-posts-grid');
+  if (!grid) return;
+  grid.innerHTML = researchPosts.map(p => `
+    <div style="background:#faf9ff;border:1px solid #ede9fe;border-radius:10px;padding:16px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-size:11px;font-weight:bold;color:#7c3aed;background:#ede9fe;padding:2px 10px;border-radius:20px;">No.${p.no}</span>
+        <span style="font-size:11px;color:#64748b;">${p.type}</span>
+      </div>
+      <div style="font-size:12px;color:#374151;line-height:1.8;white-space:pre-wrap;">${p.text}</div>
+    </div>
+  `).join('');
+}
+
+// ===== INIT =====
+buildSimulator();
+buildProductStrategy();
+buildResearchReport();
+buildRoadmap();
+buildAICards();
+buildPosts();
+buildFunnel();
+buildAccounts();
+buildResearchKeywords();
+buildResearchPosts();
+</script>
+</body>
+</html>

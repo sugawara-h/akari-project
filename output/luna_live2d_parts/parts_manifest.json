@@ -1,0 +1,1276 @@
+[
+  {
+    "name": "hair_back_L_01",
+    "group": "A_hair_back",
+    "status": "extracted_visible_pixels",
+    "notes": "後ろ髪左上。顔や前髪の裏に配置してください。",
+    "bbox": [
+      197,
+      108,
+      394,
+      570
+    ]
+  },
+  {
+    "name": "hair_back_L_02",
+    "group": "A_hair_back",
+    "status": "extracted_visible_pixels",
+    "notes": "後ろ髪左中。揺れ用の親パーツ候補です。",
+    "bbox": [
+      99,
+      384,
+      350,
+      1220
+    ]
+  },
+  {
+    "name": "hair_back_L_03",
+    "group": "A_hair_back",
+    "status": "extracted_visible_pixels",
+    "notes": "後ろ髪左下。毛先揺れを強めに設定できます。",
+    "bbox": [
+      61,
+      757,
+      226,
+      1536
+    ]
+  },
+  {
+    "name": "hair_back_R_01",
+    "group": "A_hair_back",
+    "status": "extracted_visible_pixels",
+    "notes": "後ろ髪右上。",
+    "bbox": [
+      627,
+      107,
+      832,
+      584
+    ]
+  },
+  {
+    "name": "hair_back_R_02",
+    "group": "A_hair_back",
+    "status": "extracted_visible_pixels",
+    "notes": "後ろ髪右中。",
+    "bbox": [
+      734,
+      392,
+      1024,
+      1252
+    ]
+  },
+  {
+    "name": "hair_back_R_03",
+    "group": "A_hair_back",
+    "status": "extracted_visible_pixels",
+    "notes": "後ろ髪右下。",
+    "bbox": [
+      821,
+      858,
+      1024,
+      1536
+    ]
+  },
+  {
+    "name": "hair_tip_L_01",
+    "group": "A_hair_tips",
+    "status": "extracted_visible_pixels",
+    "notes": "左毛先1。遅延揺れ向き。",
+    "bbox": [
+      87,
+      944,
+      223,
+      1453
+    ]
+  },
+  {
+    "name": "hair_tip_L_02",
+    "group": "A_hair_tips",
+    "status": "extracted_visible_pixels",
+    "notes": "左毛先2。",
+    "bbox": [
+      177,
+      954,
+      346,
+      1489
+    ]
+  },
+  {
+    "name": "hair_tip_R_01",
+    "group": "A_hair_tips",
+    "status": "extracted_visible_pixels",
+    "notes": "右毛先1。",
+    "bbox": [
+      743,
+      911,
+      910,
+      1536
+    ]
+  },
+  {
+    "name": "hair_tip_R_02",
+    "group": "A_hair_tips",
+    "status": "extracted_visible_pixels",
+    "notes": "右毛先2。",
+    "bbox": [
+      876,
+      810,
+      1024,
+      1451
+    ]
+  },
+  {
+    "name": "hair_ahoge_01",
+    "group": "A_hair_front",
+    "status": "extracted_visible_pixels",
+    "notes": "浮き毛1。",
+    "bbox": [
+      488,
+      56,
+      545,
+      114
+    ]
+  },
+  {
+    "name": "hair_ahoge_02",
+    "group": "A_hair_front",
+    "status": "extracted_visible_pixels",
+    "notes": "浮き毛2。",
+    "bbox": [
+      576,
+      69,
+      636,
+      133
+    ]
+  },
+  {
+    "name": "hair_side_L_03",
+    "group": "A_hair_side",
+    "status": "extracted_visible_pixels",
+    "notes": "横髪左後。",
+    "bbox": [
+      78,
+      572,
+      230,
+      1497
+    ]
+  },
+  {
+    "name": "hair_side_L_02",
+    "group": "A_hair_side",
+    "status": "extracted_visible_pixels",
+    "notes": "横髪左中。",
+    "bbox": [
+      118,
+      383,
+      317,
+      1375
+    ]
+  },
+  {
+    "name": "hair_side_L_01",
+    "group": "A_hair_side",
+    "status": "extracted_visible_pixels",
+    "notes": "横髪左前。",
+    "bbox": [
+      187,
+      339,
+      396,
+      1118
+    ]
+  },
+  {
+    "name": "hair_side_R_03",
+    "group": "A_hair_side",
+    "status": "extracted_visible_pixels",
+    "notes": "横髪右後。",
+    "bbox": [
+      825,
+      439,
+      1024,
+      1497
+    ]
+  },
+  {
+    "name": "hair_side_R_02",
+    "group": "A_hair_side",
+    "status": "extracted_visible_pixels",
+    "notes": "横髪右中。",
+    "bbox": [
+      712,
+      321,
+      958,
+      1508
+    ]
+  },
+  {
+    "name": "hair_side_R_01",
+    "group": "A_hair_side",
+    "status": "extracted_visible_pixels",
+    "notes": "横髪右前。",
+    "bbox": [
+      609,
+      339,
+      854,
+      1136
+    ]
+  },
+  {
+    "name": "neck_shadow",
+    "group": "A_head_base",
+    "status": "extracted_visible_pixels",
+    "notes": "首影。乗算調整推奨。",
+    "bbox": [
+      403,
+      597,
+      630,
+      729
+    ]
+  },
+  {
+    "name": "neck",
+    "group": "A_head_base",
+    "status": "extracted_visible_pixels",
+    "notes": "首。隠れ部分の描き足しは別途推奨。",
+    "bbox": [
+      411,
+      497,
+      621,
+      724
+    ]
+  },
+  {
+    "name": "ear_L",
+    "group": "A_head_base",
+    "status": "extracted_visible_pixels",
+    "notes": "左耳。髪下に配置。",
+    "bbox": [
+      329,
+      289,
+      394,
+      474
+    ]
+  },
+  {
+    "name": "ear_R",
+    "group": "A_head_base",
+    "status": "extracted_visible_pixels",
+    "notes": "右耳。髪下に配置。",
+    "bbox": [
+      632,
+      297,
+      698,
+      459
+    ]
+  },
+  {
+    "name": "face_base",
+    "group": "A_head_base",
+    "status": "extracted_visible_pixels",
+    "notes": "顔ベース。輪郭外は元絵依存なので、角度付け前に描き足し推奨。",
+    "bbox": [
+      365,
+      167,
+      672,
+      576
+    ]
+  },
+  {
+    "name": "face_contour",
+    "group": "A_head_base",
+    "status": "extracted_visible_pixels",
+    "notes": "顔輪郭調整用の複製レイヤー。",
+    "bbox": [
+      365,
+      167,
+      672,
+      576
+    ]
+  },
+  {
+    "name": "cheek_normal",
+    "group": "A_face_detail",
+    "status": "extracted_visible_pixels",
+    "notes": "通常チーク。",
+    "bbox": [
+      339,
+      410,
+      695,
+      498
+    ]
+  },
+  {
+    "name": "cheek_blush_extra",
+    "group": "A_face_detail",
+    "status": "extracted_visible_pixels",
+    "notes": "照れ差分チーク。元絵から複製、必要に応じて彩度調整してください。",
+    "bbox": [
+      339,
+      410,
+      695,
+      498
+    ]
+  },
+  {
+    "name": "nose",
+    "group": "A_face_detail",
+    "status": "extracted_visible_pixels",
+    "notes": "鼻。角度変化時に微調整しやすいよう独立。",
+    "bbox": [
+      496,
+      374,
+      532,
+      436
+    ]
+  },
+  {
+    "name": "eyebrow_L",
+    "group": "A_face_detail",
+    "status": "extracted_visible_pixels",
+    "notes": "左眉。",
+    "bbox": [
+      397,
+      304,
+      481,
+      348
+    ]
+  },
+  {
+    "name": "eyebrow_R",
+    "group": "A_face_detail",
+    "status": "extracted_visible_pixels",
+    "notes": "右眉。",
+    "bbox": [
+      548,
+      304,
+      636,
+      335
+    ]
+  },
+  {
+    "name": "eye_L_white",
+    "group": "A_eye_L",
+    "status": "extracted_visible_pixels",
+    "notes": "左白目。",
+    "bbox": [
+      386,
+      328,
+      491,
+      394
+    ]
+  },
+  {
+    "name": "eye_L_iris",
+    "group": "A_eye_L",
+    "status": "extracted_visible_pixels",
+    "notes": "左黒目・虹彩。",
+    "bbox": [
+      419,
+      328,
+      484,
+      397
+    ]
+  },
+  {
+    "name": "eye_L_pupil",
+    "group": "A_eye_L",
+    "status": "extracted_visible_pixels",
+    "notes": "左瞳孔。",
+    "bbox": [
+      437,
+      345,
+      467,
+      383
+    ]
+  },
+  {
+    "name": "eye_L_highlight",
+    "group": "A_eye_L",
+    "status": "extracted_visible_pixels",
+    "notes": "左ハイライト。",
+    "bbox": [
+      426,
+      334,
+      466,
+      368
+    ]
+  },
+  {
+    "name": "eye_L_sparkle_add",
+    "group": "A_eye_L",
+    "status": "extracted_visible_pixels",
+    "notes": "左瞳きらめき用。加算推奨。",
+    "bbox": [
+      413,
+      342,
+      483,
+      380
+    ]
+  },
+  {
+    "name": "eye_L_upper_lid",
+    "group": "A_eye_L",
+    "status": "extracted_visible_pixels",
+    "notes": "左上まぶた線。",
+    "bbox": [
+      381,
+      300,
+      497,
+      351
+    ]
+  },
+  {
+    "name": "eye_L_lower_lid",
+    "group": "A_eye_L",
+    "status": "extracted_visible_pixels",
+    "notes": "左下まぶた線。",
+    "bbox": [
+      393,
+      380,
+      490,
+      418
+    ]
+  },
+  {
+    "name": "eye_L_lash",
+    "group": "A_eye_L",
+    "status": "extracted_visible_pixels",
+    "notes": "左まつ毛。",
+    "bbox": [
+      356,
+      300,
+      519,
+      352
+    ]
+  },
+  {
+    "name": "eye_L_smile",
+    "group": "A_eye_L_diff",
+    "status": "extracted_visible_pixels",
+    "notes": "左笑い目差分。元絵の目線から近似生成。",
+    "bbox": [
+      391,
+      334,
+      492,
+      382
+    ]
+  },
+  {
+    "name": "eye_L_closed",
+    "group": "A_eye_L_diff",
+    "status": "extracted_visible_pixels",
+    "notes": "左閉じ目差分。元絵のまぶた線から近似生成。",
+    "bbox": [
+      389,
+      341,
+      494,
+      380
+    ]
+  },
+  {
+    "name": "eye_R_white",
+    "group": "A_eye_R",
+    "status": "extracted_visible_pixels",
+    "notes": "右白目。",
+    "bbox": [
+      529,
+      326,
+      637,
+      392
+    ]
+  },
+  {
+    "name": "eye_R_iris",
+    "group": "A_eye_R",
+    "status": "extracted_visible_pixels",
+    "notes": "右黒目・虹彩。",
+    "bbox": [
+      543,
+      327,
+      612,
+      397
+    ]
+  },
+  {
+    "name": "eye_R_pupil",
+    "group": "A_eye_R",
+    "status": "extracted_visible_pixels",
+    "notes": "右瞳孔。",
+    "bbox": [
+      564,
+      345,
+      596,
+      383
+    ]
+  },
+  {
+    "name": "eye_R_highlight",
+    "group": "A_eye_R",
+    "status": "extracted_visible_pixels",
+    "notes": "右ハイライト。",
+    "bbox": [
+      547,
+      334,
+      595,
+      370
+    ]
+  },
+  {
+    "name": "eye_R_sparkle_add",
+    "group": "A_eye_R",
+    "status": "extracted_visible_pixels",
+    "notes": "右瞳きらめき用。加算推奨。",
+    "bbox": [
+      536,
+      343,
+      617,
+      381
+    ]
+  },
+  {
+    "name": "eye_R_upper_lid",
+    "group": "A_eye_R",
+    "status": "extracted_visible_pixels",
+    "notes": "右上まぶた線。",
+    "bbox": [
+      523,
+      300,
+      645,
+      352
+    ]
+  },
+  {
+    "name": "eye_R_lower_lid",
+    "group": "A_eye_R",
+    "status": "extracted_visible_pixels",
+    "notes": "右下まぶた線。",
+    "bbox": [
+      532,
+      379,
+      634,
+      418
+    ]
+  },
+  {
+    "name": "eye_R_lash",
+    "group": "A_eye_R",
+    "status": "extracted_visible_pixels",
+    "notes": "右まつ毛。",
+    "bbox": [
+      502,
+      300,
+      664,
+      352
+    ]
+  },
+  {
+    "name": "eye_R_smile",
+    "group": "A_eye_R_diff",
+    "status": "extracted_visible_pixels",
+    "notes": "右笑い目差分。",
+    "bbox": [
+      534,
+      333,
+      635,
+      381
+    ]
+  },
+  {
+    "name": "eye_R_closed",
+    "group": "A_eye_R_diff",
+    "status": "extracted_visible_pixels",
+    "notes": "右閉じ目差分。",
+    "bbox": [
+      530,
+      341,
+      638,
+      381
+    ]
+  },
+  {
+    "name": "mouth_base",
+    "group": "A_mouth",
+    "status": "extracted_visible_pixels",
+    "notes": "口ベース。",
+    "bbox": [
+      484,
+      476,
+      565,
+      524
+    ]
+  },
+  {
+    "name": "mouth_upper_lip",
+    "group": "A_mouth",
+    "status": "extracted_visible_pixels",
+    "notes": "上唇。",
+    "bbox": [
+      483,
+      476,
+      566,
+      503
+    ]
+  },
+  {
+    "name": "mouth_lower_lip",
+    "group": "A_mouth",
+    "status": "extracted_visible_pixels",
+    "notes": "下唇。",
+    "bbox": [
+      489,
+      494,
+      559,
+      529
+    ]
+  },
+  {
+    "name": "mouth_inside",
+    "group": "A_mouth",
+    "status": "extracted_visible_pixels",
+    "notes": "口内。母音差分のベース。",
+    "bbox": [
+      495,
+      485,
+      552,
+      512
+    ]
+  },
+  {
+    "name": "mouth_teeth",
+    "group": "A_mouth",
+    "status": "transparent_placeholder",
+    "notes": "元絵に歯が見えないため透明。必要時に描き足し。",
+    "bbox": null
+  },
+  {
+    "name": "mouth_tongue",
+    "group": "A_mouth",
+    "status": "transparent_placeholder",
+    "notes": "元絵に舌が見えないため透明。必要時に描き足し。",
+    "bbox": null
+  },
+  {
+    "name": "hair_front_center",
+    "group": "A_hair_front",
+    "status": "extracted_visible_pixels",
+    "notes": "前髪中央。顔より前。",
+    "bbox": [
+      382,
+      73,
+      642,
+      349
+    ]
+  },
+  {
+    "name": "hair_front_L",
+    "group": "A_hair_front",
+    "status": "extracted_visible_pixels",
+    "notes": "前髪左。",
+    "bbox": [
+      266,
+      92,
+      469,
+      452
+    ]
+  },
+  {
+    "name": "hair_front_R",
+    "group": "A_hair_front",
+    "status": "extracted_visible_pixels",
+    "notes": "前髪右。",
+    "bbox": [
+      576,
+      87,
+      739,
+      474
+    ]
+  },
+  {
+    "name": "accessory_moon_hair",
+    "group": "B_accessory",
+    "status": "extracted_visible_pixels",
+    "notes": "月モチーフ髪飾り。",
+    "bbox": [
+      300,
+      208,
+      388,
+      303
+    ]
+  },
+  {
+    "name": "accessory_star_hair",
+    "group": "B_accessory",
+    "status": "extracted_visible_pixels",
+    "notes": "星モチーフ髪飾り。",
+    "bbox": [
+      278,
+      232,
+      349,
+      297
+    ]
+  },
+  {
+    "name": "flower_hair_R",
+    "group": "B_accessory",
+    "status": "extracted_visible_pixels",
+    "notes": "白花の髪飾り。",
+    "bbox": [
+      647,
+      151,
+      831,
+      326
+    ]
+  },
+  {
+    "name": "leaf_hair_R",
+    "group": "B_accessory",
+    "status": "extracted_visible_pixels",
+    "notes": "葉飾り。",
+    "bbox": [
+      722,
+      131,
+      853,
+      291
+    ]
+  },
+  {
+    "name": "earring_L",
+    "group": "B_accessory",
+    "status": "extracted_visible_pixels",
+    "notes": "左ピアス。揺れ物。",
+    "bbox": [
+      348,
+      424,
+      387,
+      524
+    ]
+  },
+  {
+    "name": "earring_R",
+    "group": "B_accessory",
+    "status": "extracted_visible_pixels",
+    "notes": "右ピアス。揺れ物。",
+    "bbox": [
+      643,
+      417,
+      684,
+      519
+    ]
+  },
+  {
+    "name": "necklace",
+    "group": "B_accessory",
+    "status": "extracted_visible_pixels",
+    "notes": "ネックレス。揺れ物。",
+    "bbox": [
+      381,
+      557,
+      648,
+      698
+    ]
+  },
+  {
+    "name": "chest_accessory",
+    "group": "B_accessory",
+    "status": "extracted_visible_pixels",
+    "notes": "胸元アクセサリー。",
+    "bbox": [
+      448,
+      664,
+      588,
+      836
+    ]
+  },
+  {
+    "name": "body_base",
+    "group": "C_body",
+    "status": "extracted_visible_pixels",
+    "notes": "上半身ベース。",
+    "bbox": [
+      142,
+      619,
+      897,
+      1536
+    ]
+  },
+  {
+    "name": "chest",
+    "group": "C_body",
+    "status": "extracted_visible_pixels",
+    "notes": "胸部。",
+    "bbox": [
+      295,
+      618,
+      724,
+      933
+    ]
+  },
+  {
+    "name": "shoulder_L",
+    "group": "C_body",
+    "status": "extracted_visible_pixels",
+    "notes": "左肩。",
+    "bbox": [
+      177,
+      601,
+      388,
+      864
+    ]
+  },
+  {
+    "name": "shoulder_R",
+    "group": "C_body",
+    "status": "extracted_visible_pixels",
+    "notes": "右肩。",
+    "bbox": [
+      626,
+      600,
+      856,
+      866
+    ]
+  },
+  {
+    "name": "arm_L_upper",
+    "group": "C_body",
+    "status": "extracted_visible_pixels",
+    "notes": "左上腕。",
+    "bbox": [
+      127,
+      712,
+      316,
+      1176
+    ]
+  },
+  {
+    "name": "arm_L_lower",
+    "group": "C_body",
+    "status": "extracted_visible_pixels",
+    "notes": "左前腕。",
+    "bbox": [
+      158,
+      969,
+      421,
+      1304
+    ]
+  },
+  {
+    "name": "hand_L",
+    "group": "C_body",
+    "status": "extracted_visible_pixels",
+    "notes": "左手。バク前後関係に注意。",
+    "bbox": [
+      364,
+      966,
+      551,
+      1078
+    ]
+  },
+  {
+    "name": "arm_R_upper",
+    "group": "C_body",
+    "status": "extracted_visible_pixels",
+    "notes": "右上腕。",
+    "bbox": [
+      683,
+      717,
+      886,
+      1149
+    ]
+  },
+  {
+    "name": "arm_R_lower",
+    "group": "C_body",
+    "status": "extracted_visible_pixels",
+    "notes": "右前腕。",
+    "bbox": [
+      565,
+      924,
+      856,
+      1112
+    ]
+  },
+  {
+    "name": "hand_R",
+    "group": "C_body",
+    "status": "extracted_visible_pixels",
+    "notes": "右手。バク前後関係に注意。",
+    "bbox": [
+      517,
+      1015,
+      704,
+      1118
+    ]
+  },
+  {
+    "name": "dress_body",
+    "group": "D_dress",
+    "status": "extracted_visible_pixels",
+    "notes": "身頃ベース。",
+    "bbox": [
+      166,
+      637,
+      875,
+      1536
+    ]
+  },
+  {
+    "name": "dress_lace_chest",
+    "group": "D_dress",
+    "status": "extracted_visible_pixels",
+    "notes": "胸元レース。",
+    "bbox": [
+      330,
+      625,
+      682,
+      786
+    ]
+  },
+  {
+    "name": "dress_ribbon_chest",
+    "group": "D_dress",
+    "status": "extracted_visible_pixels",
+    "notes": "胸元リボン。",
+    "bbox": [
+      400,
+      772,
+      597,
+      881
+    ]
+  },
+  {
+    "name": "sleeve_L",
+    "group": "D_dress",
+    "status": "extracted_visible_pixels",
+    "notes": "左袖。",
+    "bbox": [
+      61,
+      702,
+      375,
+      1332
+    ]
+  },
+  {
+    "name": "sleeve_R",
+    "group": "D_dress",
+    "status": "extracted_visible_pixels",
+    "notes": "右袖。",
+    "bbox": [
+      707,
+      697,
+      969,
+      1264
+    ]
+  },
+  {
+    "name": "sleeve_lace_L",
+    "group": "D_dress",
+    "status": "extracted_visible_pixels",
+    "notes": "左袖レース。",
+    "bbox": [
+      54,
+      1005,
+      381,
+      1322
+    ]
+  },
+  {
+    "name": "sleeve_lace_R",
+    "group": "D_dress",
+    "status": "extracted_visible_pixels",
+    "notes": "右袖レース。",
+    "bbox": [
+      713,
+      1004,
+      984,
+      1331
+    ]
+  },
+  {
+    "name": "leaf_decoration_L",
+    "group": "D_dress",
+    "status": "extracted_visible_pixels",
+    "notes": "装飾葉左。",
+    "bbox": [
+      232,
+      610,
+      400,
+      1316
+    ]
+  },
+  {
+    "name": "leaf_decoration_R",
+    "group": "D_dress",
+    "status": "extracted_visible_pixels",
+    "notes": "装飾葉右。",
+    "bbox": [
+      633,
+      604,
+      794,
+      1300
+    ]
+  },
+  {
+    "name": "flower_decoration",
+    "group": "D_dress",
+    "status": "extracted_visible_pixels",
+    "notes": "花装飾。",
+    "bbox": [
+      252,
+      748,
+      762,
+      1184
+    ]
+  },
+  {
+    "name": "swaying_ornament",
+    "group": "D_dress",
+    "status": "extracted_visible_pixels",
+    "notes": "揺れる先端装飾。",
+    "bbox": [
+      467,
+      778,
+      552,
+      1366
+    ]
+  },
+  {
+    "name": "skirt_upper",
+    "group": "D_dress",
+    "status": "extracted_visible_pixels",
+    "notes": "裾上段。",
+    "bbox": [
+      177,
+      995,
+      884,
+      1249
+    ]
+  },
+  {
+    "name": "skirt_lower",
+    "group": "D_dress",
+    "status": "extracted_visible_pixels",
+    "notes": "裾下段。",
+    "bbox": [
+      125,
+      1207,
+      928,
+      1536
+    ]
+  },
+  {
+    "name": "baku_body",
+    "group": "E_baku",
+    "status": "extracted_visible_pixels",
+    "notes": "バク胴体。",
+    "bbox": [
+      393,
+      818,
+      860,
+      1234
+    ]
+  },
+  {
+    "name": "baku_foot",
+    "group": "E_baku",
+    "status": "extracted_visible_pixels",
+    "notes": "バク足。",
+    "bbox": [
+      480,
+      1093,
+      751,
+      1276
+    ]
+  },
+  {
+    "name": "baku_hand_L",
+    "group": "E_baku",
+    "status": "extracted_visible_pixels",
+    "notes": "バク手左。",
+    "bbox": [
+      428,
+      968,
+      552,
+      1154
+    ]
+  },
+  {
+    "name": "baku_hand_R",
+    "group": "E_baku",
+    "status": "extracted_visible_pixels",
+    "notes": "バク手右。",
+    "bbox": [
+      722,
+      950,
+      843,
+      1111
+    ]
+  },
+  {
+    "name": "baku_ear_L",
+    "group": "E_baku",
+    "status": "extracted_visible_pixels",
+    "notes": "バク耳左。",
+    "bbox": [
+      464,
+      648,
+      583,
+      793
+    ]
+  },
+  {
+    "name": "baku_ear_R",
+    "group": "E_baku",
+    "status": "extracted_visible_pixels",
+    "notes": "バク耳右。",
+    "bbox": [
+      789,
+      683,
+      892,
+      799
+    ]
+  },
+  {
+    "name": "baku_head",
+    "group": "E_baku",
+    "status": "extracted_visible_pixels",
+    "notes": "バク頭。",
+    "bbox": [
+      506,
+      679,
+      839,
+      946
+    ]
+  },
+  {
+    "name": "baku_face",
+    "group": "E_baku",
+    "status": "extracted_visible_pixels",
+    "notes": "バク顔。",
+    "bbox": [
+      572,
+      742,
+      817,
+      909
+    ]
+  },
+  {
+    "name": "baku_cheek",
+    "group": "E_baku",
+    "status": "extracted_visible_pixels",
+    "notes": "バクほっぺ。",
+    "bbox": [
+      660,
+      824,
+      837,
+      887
+    ]
+  },
+  {
+    "name": "baku_eye",
+    "group": "E_baku",
+    "status": "extracted_visible_pixels",
+    "notes": "バク目。",
+    "bbox": [
+      666,
+      764,
+      849,
+      828
+    ]
+  },
+  {
+    "name": "baku_mouth",
+    "group": "E_baku",
+    "status": "extracted_visible_pixels",
+    "notes": "バク口。",
+    "bbox": [
+      677,
+      871,
+      766,
+      918
+    ]
+  },
+  {
+    "name": "expr_normal_smile",
+    "group": "F_expression_placeholders",
+    "status": "transparent_placeholder",
+    "notes": "1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。",
+    "bbox": null
+  },
+  {
+    "name": "expr_soft_smile",
+    "group": "F_expression_placeholders",
+    "status": "transparent_placeholder",
+    "notes": "1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。",
+    "bbox": null
+  },
+  {
+    "name": "expr_mysterious_downcast",
+    "group": "F_expression_placeholders",
+    "status": "transparent_placeholder",
+    "notes": "1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。",
+    "bbox": null
+  },
+  {
+    "name": "expr_empathy_worried_brow",
+    "group": "F_expression_placeholders",
+    "status": "transparent_placeholder",
+    "notes": "1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。",
+    "bbox": null
+  },
+  {
+    "name": "expr_teary_healing",
+    "group": "F_expression_placeholders",
+    "status": "transparent_placeholder",
+    "notes": "1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。",
+    "bbox": null
+  },
+  {
+    "name": "expr_blush",
+    "group": "F_expression_placeholders",
+    "status": "transparent_placeholder",
+    "notes": "1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。",
+    "bbox": null
+  },
+  {
+    "name": "expr_serious_fortune",
+    "group": "F_expression_placeholders",
+    "status": "transparent_placeholder",
+    "notes": "1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。",
+    "bbox": null
+  },
+  {
+    "name": "mouth_A",
+    "group": "F_expression_placeholders",
+    "status": "transparent_placeholder",
+    "notes": "1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。",
+    "bbox": null
+  },
+  {
+    "name": "mouth_I",
+    "group": "F_expression_placeholders",
+    "status": "transparent_placeholder",
+    "notes": "1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。",
+    "bbox": null
+  },
+  {
+    "name": "mouth_U",
+    "group": "F_expression_placeholders",
+    "status": "transparent_placeholder",
+    "notes": "1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。",
+    "bbox": null
+  },
+  {
+    "name": "mouth_E",
+    "group": "F_expression_placeholders",
+    "status": "transparent_placeholder",
+    "notes": "1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。",
+    "bbox": null
+  },
+  {
+    "name": "mouth_O",
+    "group": "F_expression_placeholders",
+    "status": "transparent_placeholder",
+    "notes": "1枚絵からは生成せず透明プレースホルダー。描き足し・差分作画用。",
+    "bbox": null
+  }
+]
