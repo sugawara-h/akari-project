@@ -2155,6 +2155,14 @@ function showFunnelDetail(id) {
   `;
 }
 
+// ===== STORE API =====
+function storeUrl(key) {
+  const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  return isLocal
+    ? '/api/store/' + key
+    : '/.netlify/functions/store?key=' + key;
+}
+
 // ===== MODAL =====
 function closeModal() {
   document.getElementById('modal').classList.remove('show');
@@ -2187,7 +2195,7 @@ function saveAllCredentials(id) {
     entry[s.key] = { username: u.trim(), password: p, phone: ph.trim(), ...(s.key === 'google' ? { backupEmail: be.trim() } : {}) };
   });
   credentialsStore[id] = entry;
-  fetch('/api/store/credentials', {
+  fetch(storeUrl('credentials'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(credentialsStore),
@@ -2487,7 +2495,7 @@ function addNewAccount(name, genre, status) {
   const maxId = accounts.reduce(function(m, a) { return Math.max(m, a.id); }, 0);
   accounts.push({ id: maxId + 1, name: name, genre: genre, status: status, followers: 0, posts: 0, line: 0 });
   const custom = accounts.filter(function(a) { return a.id > 20; });
-  fetch('/api/store/custom-accounts', {
+  fetch(storeUrl('custom-accounts'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(custom),
@@ -2897,7 +2905,7 @@ function loadWorldview(id) {
 
 function saveWorldviewData(id, text) {
   worldviewStore[id] = text;
-  fetch('/api/store/worldview', {
+  fetch(storeUrl('worldview'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(worldviewStore),
@@ -2948,9 +2956,9 @@ function editAccWorldview(id) {
 (async function initApp() {
   try {
     const [cred, wv, custom] = await Promise.all([
-      fetch('/api/store/credentials').then(r => r.json()),
-      fetch('/api/store/worldview').then(r => r.json()),
-      fetch('/api/store/custom-accounts').then(r => r.json()),
+      fetch(storeUrl('credentials')).then(r => r.json()),
+      fetch(storeUrl('worldview')).then(r => r.json()),
+      fetch(storeUrl('custom-accounts')).then(r => r.json()),
     ]);
     if (cred && typeof cred === 'object' && !Array.isArray(cred)) credentialsStore = cred;
     if (wv  && typeof wv  === 'object' && !Array.isArray(wv))  worldviewStore  = wv;
