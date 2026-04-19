@@ -9,7 +9,18 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: JSON.stringify({ error: 'Invalid key' }) };
   }
 
-  const store = getStore({ name: 'akari-data', consistency: 'strong' });
+  const siteID = process.env.NETLIFY_SITE_ID;
+  const token  = process.env.NETLIFY_TOKEN;
+
+  if (!siteID || !token) {
+    return {
+      statusCode: 503,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: 'NETLIFY_SITE_ID と NETLIFY_TOKEN の環境変数が未設定です' }),
+    };
+  }
+
+  const store = getStore({ name: 'akari-data', siteID, token });
 
   if (event.httpMethod === 'GET') {
     const raw = await store.get(key);
@@ -22,7 +33,7 @@ exports.handler = async (event) => {
 
   if (event.httpMethod === 'POST') {
     const body = event.body || 'null';
-    JSON.parse(body); // validate JSON
+    JSON.parse(body);
     await store.set(key, body);
     return {
       statusCode: 200,
