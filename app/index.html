@@ -177,6 +177,8 @@ body { font-family: 'Hiragino Kaku Gothic Pro', 'Yu Gothic', 'メイリオ', san
 .status-pending { background: #fef3c7; color: #92400e; }
 .status-approved { background: #d1fae5; color: #065f46; }
 .status-rejected { background: #fee2e2; color: #991b1b; }
+.status-archived { background: #e0e7ff; color: #3730a3; }
+.post-card.archived { border-left-color: #6366f1; opacity: 0.75; }
 .post-body { font-size: 13px; color: #374151; line-height: 1.85; white-space: pre-wrap; margin-bottom: 14px; max-height: 160px; overflow: hidden; transition: max-height 0.3s; }
 .post-body.expanded { max-height: 1000px; }
 .post-expand { font-size: 11px; color: #7c3aed; cursor: pointer; margin-bottom: 12px; }
@@ -517,6 +519,7 @@ body { font-family: 'Hiragino Kaku Gothic Pro', 'Yu Gothic', 'メイリオ', san
       <div class="ps-item"><div class="ps-num pending" id="count-pending">0</div><div class="ps-label">未確認</div></div>
       <div class="ps-item"><div class="ps-num approved" id="count-approved">0</div><div class="ps-label">承認済み</div></div>
       <div class="ps-item"><div class="ps-num rejected" id="count-rejected">0</div><div class="ps-label">却下</div></div>
+      <div class="ps-item"><div class="ps-num" style="color:#6366f1;" id="count-archived">0</div><div class="ps-label">アーカイブ済み</div></div>
       <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
         <button class="btn btn-primary btn-sm" onclick="autoScheduleAll()">🗓️ 自動スケジュール設定</button>
         <button class="btn btn-success btn-sm" onclick="approveAll()">✓ 全件承認</button>
@@ -531,6 +534,7 @@ body { font-family: 'Hiragino Kaku Gothic Pro', 'Yu Gothic', 'メイリオ', san
       <button class="filter-btn" data-filter="興味づけ" onclick="filterPosts('興味づけ',this)">興味づけ</button>
       <button class="filter-btn" data-filter="pending" onclick="filterPosts('pending',this)">未確認</button>
       <button class="filter-btn" data-filter="approved" onclick="filterPosts('approved',this)">承認済み</button>
+      <button class="filter-btn" data-filter="archived" onclick="filterPosts('archived',this)">アーカイブ済み</button>
     </div>
     <div id="posts-container"></div>
   </div>
@@ -1456,6 +1460,7 @@ function updateSchedDate(id, val) {
   const post = posts.find(p => p.id === id);
   post.scheduledDate = val;
   post.scheduledTime = val && post.scheduledHour ? `${val}T${post.scheduledHour}` : '';
+  maybeArchive(post);
   refreshSchedBox(post);
 }
 
@@ -1463,7 +1468,19 @@ function updateSchedHour(id, val) {
   const post = posts.find(p => p.id === id);
   post.scheduledHour = val;
   post.scheduledTime = post.scheduledDate && val ? `${post.scheduledDate}T${val}` : '';
+  maybeArchive(post);
   refreshSchedBox(post);
+}
+
+function maybeArchive(post) {
+  if (post.status === 'approved' && post.scheduledDate && post.scheduledHour) {
+    post.status = 'archived';
+    const card = document.getElementById('post-card-' + post.id);
+    if (card) card.className = 'post-card archived';
+    const badge = document.getElementById('status-badge-' + post.id);
+    if (badge) { badge.className = 'status-badge status-archived'; badge.textContent = 'アーカイブ済み'; }
+    updatePostCounts();
+  }
 }
 
 function refreshSchedBox(post) {
@@ -1538,7 +1555,7 @@ function renderPosts() {
   const container = document.getElementById('posts-container');
   const accountPosts = getFilteredPostsByAccount();
   let filtered = accountPosts;
-  if (currentFilter === 'pending' || currentFilter === 'approved' || currentFilter === 'rejected') {
+  if (currentFilter === 'pending' || currentFilter === 'approved' || currentFilter === 'rejected' || currentFilter === 'archived') {
     filtered = accountPosts.filter(p => p.status === currentFilter);
   } else if (currentFilter !== 'all') {
     filtered = accountPosts.filter(p => p.type === currentFilter);
@@ -1564,7 +1581,7 @@ function renderPosts() {
           ${accBadge}
           <span class="type-badge type-${post.type}">${post.type}</span>
           <span class="status-badge status-${post.status}" id="status-badge-${post.id}">
-            ${post.status === 'pending' ? '未確認' : post.status === 'approved' ? '承認済み' : '却下'}
+            ${post.status === 'pending' ? '未確認' : post.status === 'approved' ? '承認済み' : post.status === 'archived' ? 'アーカイブ済み' : '却下'}
           </span>
           ${post.edited ? '<span class="edited-badge">編集済み</span>' : ''}
         </div>
@@ -1675,7 +1692,7 @@ function setStatus(id, status) {
   card.className = 'post-card ' + status;
   const badge = document.getElementById('status-badge-' + id);
   badge.className = 'status-badge status-' + status;
-  badge.textContent = status === 'pending' ? '未確認' : status === 'approved' ? '承認済み' : '却下';
+  badge.textContent = status === 'pending' ? '未確認' : status === 'approved' ? '承認済み' : status === 'archived' ? 'アーカイブ済み' : '却下';
   // スケジュール確定バッジを即時更新
   const box = document.getElementById('sched-box-' + id);
   if (box) box.outerHTML = renderSchedBox(post);
@@ -1709,6 +1726,7 @@ function updatePostCounts() {
   const pending = scope.filter(p => p.status === 'pending').length;
   const approved = scope.filter(p => p.status === 'approved').length;
   const rejected = scope.filter(p => p.status === 'rejected').length;
+  const archived = scope.filter(p => p.status === 'archived').length;
   const typeCounts = scope.reduce((counts, post) => {
     counts[post.type] = (counts[post.type] || 0) + 1;
     return counts;
@@ -1716,6 +1734,7 @@ function updatePostCounts() {
   document.getElementById('count-pending').textContent = pending;
   document.getElementById('count-approved').textContent = approved;
   document.getElementById('count-rejected').textContent = rejected;
+  document.getElementById('count-archived').textContent = archived;
   const allPending = posts.filter(p => p.status === 'pending').length;
   document.getElementById('pending-badge').textContent = allPending;
   document.getElementById('dash-approved').textContent = posts.filter(p => p.status === 'approved').length;
