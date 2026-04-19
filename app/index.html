@@ -1580,6 +1580,7 @@ function renderPosts() {
           <button class="btn btn-danger btn-sm" onclick="setStatus(${post.id}, 'rejected')">✕ 却下</button>
           <button class="btn btn-ghost btn-sm" onclick="setStatus(${post.id}, 'pending')">↺ 保留</button>
           <button class="btn btn-sm" style="background:#f1f5f9;color:#374151;" onclick="startEdit(${post.id})">✏️ 編集</button>
+          <button class="btn btn-sm" style="background:#f1f5f9;color:#374151;" onclick="copyPostContent(${post.id})" id="copy-btn-${post.id}">📋 コピー</button>
         </div>
         ${renderSchedBox(post)}
       </div>
@@ -1607,6 +1608,16 @@ function escHtml(str) {
 function toggleExpand(id) {
   const body = document.getElementById('post-body-' + id);
   body.classList.toggle('expanded');
+}
+
+function copyPostContent(id) {
+  const post = posts.find(p => p.id === id);
+  if (!post) return;
+  navigator.clipboard.writeText(post.content).then(() => {
+    const btn = document.getElementById('copy-btn-' + id);
+    btn.textContent = '✓ コピー完了';
+    setTimeout(() => { btn.textContent = '📋 コピー'; }, 2000);
+  });
 }
 
 function startEdit(id) {
