@@ -1362,7 +1362,7 @@ function updateSchedHour(id, val) {
 }
 
 function maybeArchive(post) {
-  if (post.status === 'approved' && post.scheduledDate && post.scheduledHour) {
+  if (post.status !== 'archived' && post.status !== 'rejected' && post.scheduledDate && post.scheduledHour) {
     post.status = 'archived';
     const card = document.getElementById('post-card-' + post.id);
     if (card) card.className = 'post-card archived';
