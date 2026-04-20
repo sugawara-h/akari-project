@@ -2192,6 +2192,7 @@ function buildResearchPosts() {
 let wizardStep = 1;
 let wizardSelectedAccountId = null;
 let wizardDraftPosts = [];
+let wizardGenerating = false;
 
 function openPostWizard() {
   // デフォルトで現在選択中のアカウントを選択
@@ -2406,15 +2407,18 @@ function renderWizardStep3() {
 
     <div class="wiz-section">
       <div class="wiz-section-title">🤖 投稿案を生成</div>
-      <div class="wiz-info-box" style="margin-bottom:12px;font-size:12px;color:#64748b;">
-        以下のコマンドをターミナルで実行すると、アカウントの世界観とリサーチ結果を反映した投稿案が生成されます。
-        生成後、sync スクリプトを実行するとダッシュボードに反映されます。
+      <div style="margin-bottom:12px;">
+        ${wizardGenerating
+          ? `<button class="btn btn-primary" disabled style="width:100%;opacity:0.7;">⏳ 生成中...（最大25秒）</button>`
+          : `<button class="btn btn-primary" onclick="generatePostsWithAI()" style="width:100%;background:linear-gradient(135deg,#7c3aed,#4f46e5);">✨ AIで今すぐ生成（約15秒）</button>`
+        }
       </div>
-      <div style="background:#111827;color:#e5e7eb;border-radius:8px;padding:14px;font-size:12px;font-family:monospace;line-height:1.8;margin-bottom:12px;">
-        cd ~/akari-project<br>
-        node ai-team/sns-ai/generate.js --account ${wizardSelectedAccountId || 1}<br>
-        node scripts/sync-posts-to-dashboard.js
-      </div>
+      ${(() => {
+        const available = posts.filter(p => p.accountId === wizardSelectedAccountId && p.status === 'pending' && !wizardDraftPosts.find(d => d.content === p.content));
+        return available.length > 0
+          ? `<div style="margin-bottom:12px;"><button class="btn btn-secondary" onclick="loadGeneratedPosts()" style="width:100%;">📥 既存の生成済み投稿を読み込む（${available.length}本）</button></div>`
+          : '';
+      })()}
       <div style="border-top:1px solid #f1f5f9;padding-top:12px;">
         <div class="wiz-section-title" style="margin-bottom:8px;">または、手動でサンプル投稿を追加</div>
         <textarea class="wiz-textarea" id="wiz-manual-post" rows="5"
@@ -2447,6 +2451,29 @@ function renderWizardStep3() {
       `).join('')}
     </div>` : ''}
   `;
+}
+
+async function generatePostsWithAI() {
+  wizardGenerating = true;
+  document.getElementById('wizard-body').innerHTML = renderWizardStep3();
+  try {
+    const res = await fetch('/api/generate-posts', { method: 'POST' });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || '生成に失敗しました');
+    data.posts.forEach(p => wizardDraftPosts.push({ content: p.content, type: p.type, status: 'pending', accountId: wizardSelectedAccountId }));
+  } catch (err) {
+    alert('エラー: ' + err.message);
+  } finally {
+    wizardGenerating = false;
+    document.getElementById('wizard-body').innerHTML = renderWizardStep3();
+  }
+}
+
+function loadGeneratedPosts() {
+  const available = posts.filter(p => p.accountId === wizardSelectedAccountId && p.status === 'pending' && !wizardDraftPosts.find(d => d.content === p.content));
+  if (available.length === 0) { alert('読み込める投稿がありません。'); return; }
+  available.forEach(p => wizardDraftPosts.push({ content: p.content, type: p.type, status: 'pending', accountId: wizardSelectedAccountId }));
+  document.getElementById('wizard-body').innerHTML = renderWizardStep3();
 }
 
 function addManualWizardPost() {

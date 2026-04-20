@@ -7,3 +7,12 @@
   to = "/.netlify/functions/store?key=:key"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/api/generate-posts"
+  to = "/.netlify/functions/generate-posts"
+  status = 200
+  force = true
+
+[functions."generate-posts"]
+  timeout = 26
