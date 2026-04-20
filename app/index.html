@@ -2217,8 +2217,10 @@ function wizardNext() {
       alert('先に投稿案を生成してください。');
       return;
     }
+    commitWizardPosts();
+    return;
   }
-  if (wizardStep < 4) {
+  if (wizardStep < 3) {
     wizardStep++;
     renderWizardStep();
   }
@@ -2243,7 +2245,7 @@ function renderWizardStep() {
     nextBtn.style.display = 'none';
   } else {
     nextBtn.style.display = 'inline-flex';
-    nextBtn.textContent = wizardStep === 3 ? '次へ（確認へ）→' : '次へ →';
+    nextBtn.textContent = wizardStep === 3 ? '投稿管理に追加する →' : '次へ →';
   }
 
   const body = document.getElementById('wizard-body');
@@ -2537,8 +2539,8 @@ function setWizardDraftStatus(index, status) {
 }
 
 function commitWizardPosts() {
-  const toAdd = wizardDraftPosts.filter(p => p.status === 'approved');
-  if (toAdd.length === 0) { alert('承認済みの投稿がありません。'); return; }
+  const toAdd = wizardDraftPosts;
+  if (toAdd.length === 0) { alert('追加する投稿がありません。'); return; }
   const maxId = posts.length > 0 ? Math.max(...posts.map(p => p.id)) : 0;
   toAdd.forEach((p, i) => {
     posts.push({
